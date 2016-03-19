@@ -1,0 +1,15 @@
+Collect positive and negative examples using DMOZ and Search Engine
+
+* Training:
+- Positive: 
+    + Pages that have schema.org markups of the target object.
+    + Pages that do not have target object.
+- Negative: 
+    + Pages that do not contain target objects and are in the relevant websites. 
+    + Pages that are in irrlevant websites.
+
+* DMOZ:
+Given the topic "Recipe":
+- Collect all pages that in 'Recipe' topic: p_i -> Positive examples
+    + p_i contains pages that have schem.org: p1_i and pages that do not: p0_i
+- Collect pages that in w(p1_i), website of page p1_i -> Negative examples
