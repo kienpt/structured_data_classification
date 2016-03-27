@@ -37,6 +37,10 @@ def expand(urls_file, output_file):
 
     urls = url2topic.keys()
     Download.download(urls, html_dir)
+
+    print "Download finished!"
+    print "Extracting outlinks..."
+
     files = os.listdir(html_dir)
     for f in files:
         filename = html_dir + "/" + f
