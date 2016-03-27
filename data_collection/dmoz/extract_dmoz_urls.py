@@ -3,12 +3,11 @@ import re
 
 '''
 Given topics, collect urls from DMOZ
-Args:
-
-Returns:
+Usage:
+    [topic_file] [output_file]
 '''
 
-dmoz = "structure.rdf.u8"
+dmoz = "content.rdf.u8"
 START = re.compile("<Topic r:id=\"(.*)\">")
 END = re.compile("</Topic>")
 LINK = re.compile("<link r:resource=\"(.*)\"></link>")
@@ -66,7 +65,7 @@ def get_links(outfile, topics):
     out.close()
 
 if __name__=="__main__":
-    outfile = sys.argv[1]
-    topicfile = "topics.txt" 
+    outfile = sys.argv[2]
+    topicfile = sys.argv[1]
     topics = read_topics(topicfile)
     get_links(outfile, topics)
