@@ -16,11 +16,6 @@ def expand(urls_file, output_file):
     out = open(output_file, "w") 
     html_dir = "html" 
     
-    #Copy urls from urls_file to output_file
-    with open(urls_file) as lines:
-        for line in lines:  
-            out.write(line)
-
     #Download and extract in-domain outlinks from urls_file
     url2topic = {}
     with open(urls_file) as lines:
@@ -36,7 +31,7 @@ def expand(urls_file, output_file):
                 url2topic[url] = ""
 
     urls = url2topic.keys()
-    Download.download(urls, html_dir)
+    #Download.download(urls, html_dir)
 
     print "Download finished!"
     print "Extracting outlinks..."
@@ -48,11 +43,16 @@ def expand(urls_file, output_file):
             for line in lines:
                 data = json.loads(line)
                 url = data['url']
+                url = URLUtility.normalize(url)
                 html_content = data['text'] 
                 #links = HTMLParser.extract_links(url, html_content)
                 links = HTMLParser.extract_links_bs(url, html_content)
                 for link in links:
-                    out.write(link.encode('utf-8') + "\n") 
+                    if URLUtility.is_same_site(url, link):
+                        out.write(link.encode('utf-8') + "\n")
+                if url not in links:
+                    out.write(url + "\n")
+                    
     out.close()
 
 if __name__=="__main__":

@@ -7,34 +7,11 @@ import urllib2
 import sys
 import re
 import urlparse
+from urlutility import URLUtility
 
 class HTMLParser:
     LINK_PATTERN = re.compile(r'href="(.*?)"')    
-    END_PATTERN = re.compile('.*?\.(pdf|jpg|png|mp4|mp3|wmv|css|ico|xml|txt|json|svg)$')
-    FILTER_PATTERN = re.compile('\.(css|xml)')
-    @staticmethod
-    def validate_link(link):
-        '''
-        - Filter css, js, media files (pdf, jpg, png, etc.)
-        - Validate the url
-        Return None if link should be filtered or invalid.
-        '''
-        link = link.lower()
-        match = HTMLParser.FILTER_PATTERN.search(link)
-        if match != None:
-            return None
 
-        match = HTMLParser.END_PATTERN.search(link)
-        if match != None:
-            return None
-
-        if not link.startswith("http"):
-            #Some link does not start with http, i.e mailto:
-            return None
-
-        link = link.split()[0] #If a link contains space, only keep the first part before the space
-
-        return link
     
     @staticmethod
     def extract_links(url, html):
@@ -50,9 +27,12 @@ class HTMLParser:
         links = set([])
         for link in match:
             link = urlparse.urljoin(url, link)
-            link = HTMLParser.validate_link(link)
+            link = URLUtility.validate_link(link)
+            link = URLUtility.normalize(link)
             if link:
-                links.add(link)
+                link = URLUtility.normalize(link)
+                if link:
+                    links.add(link)
         return list(links)
 
     @staticmethod
@@ -73,9 +53,11 @@ class HTMLParser:
         for tag in soup.findAll('a', href=True):
             link = tag['href']
             link = urlparse.urljoin(url, link)
-            link = HTMLParser.validate_link(link)
+            link = URLUtility.validate_link(link)
             if link:
-                links.add(link)
+                link = URLUtility.normalize(link)
+                if link:
+                    links.add(link)
         return list(links)
 
 def test():
