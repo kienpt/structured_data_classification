@@ -5,7 +5,8 @@ Usage:
 '''
 import sys
 import requests
-sys.path.append("common")
+import os
+sys.path.append(os.path.dirname(__file__) + "/common")
 from urlutility import URLUtility 
 from download import Download
 from htmlparser import HTMLParser
