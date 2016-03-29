@@ -11,8 +11,11 @@ import os
 import json
 import sys
 from multiprocessing import Process
+import traceback
 
-RECIPE = re.compile("(itemtype {0,2}= {0,2}\"http://schema\.org/Recipe\")|(vocab {0,2}= {0,2}\"http://schema\.org/\" {0,2}typeof {0,2}= {0,2}\"Recipe\")")
+RECIPE = re.compile(r"<[^<]+?((itemtype\s*?=\s*?(\"|\')http://schema\.org/Recipe(\"|\'))|(vocab\s*?=\s*?(\"|\')http://schema\.org/?(\"|\')\s*?typeof\s*?=\s*?(\"|\')Recipe(\"|\')))")
+ITEMPROP = re.compile(r'(itemprop|property)')
+ITEMLIST = re.compile(r'itemListElement')
 
 def find_pattern_pages(filenames, indir, outdir, pattern):
     '''
@@ -39,9 +42,34 @@ def find_pattern_pages(filenames, indir, outdir, pattern):
                     if total%5000 == 0:
                         print f + ":" + str(hit) + ":" +  str(total)
                     if match:
+                        start = match.start(0)
+                        anchor_text = match.group(0)
+                        element_name = anchor_text.split(' ')[0].strip('<').strip()
+                        element_count = 1
+                        element_pattern = re.compile(r'</?'+element_name+r'>?')
+                        search_start = match.end(0)
+                        while element_count > 0:
+                            element_match = element_pattern.search(html[search_start:])
+                            if element_match:
+                                if '/' in element_match.group(0):
+                                    element_count -= 1
+                                else:
+                                    element_count += 1
+                                search_start += element_match.end(0)
+                            else:
+                                print "Malformed format!", data['url']
+                                search_start = len(html)
+                                break
+                        structured_data = html[start:search_start]
+                        item_prop = ITEMPROP.findall(structured_data)
+                        item_list = ITEMLIST.findall(structured_data)
+                        data['structured'] = structured_data
+                        data['itemprop'] = len(item_prop)
+                        data['itemlist'] = len(item_list)
                         hit += 1
-                        out.write(line)
+                        out.write(json.dumps(data) + '\n')
                 except:
+                    traceback.print_exc()
                     print "Failed to read a line"
                     continue
                     
