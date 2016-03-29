@@ -31,15 +31,19 @@ def find_pattern_pages(filenames, indir, outdir, pattern):
         out = open(outfile, "w")
         with open(infile) as lines:
             for line in lines:
-                total += 1
-                data = json.loads(line)
-                html = data['text']
-                match = pattern.search(html)
-                if total%5000 == 0:
-                    print f + ":" + str(hit) + ":" +  str(total)
-                if match:
-                    hit += 1
-                    out.write(line)
+                try:
+                    total += 1
+                    data = json.loads(line)
+                    html = data['text']
+                    match = pattern.search(html)
+                    if total%5000 == 0:
+                        print f + ":" + str(hit) + ":" +  str(total)
+                    if match:
+                        hit += 1
+                        out.write(line)
+                except:
+                    print "Failed to read a line"
+                    continue
                     
         out.close()
 
@@ -48,6 +52,7 @@ def main(argv):
     outdir = argv[1]
     if not os.path.exists(outdir): 
         os.makedirs(outdir)
+
     #Default
     PROCESS_NUMBER = 8
     pattern = RECIPE
