@@ -1,7 +1,8 @@
 import json
+import sys
 
-fin = open('results.json')
-fout = open('urls.txt', 'w')
+fin = open(sys.argv[1])
+fout = open(sys.argv[2], 'w')
 
 for line in fin:
     data = json.loads(line.strip())

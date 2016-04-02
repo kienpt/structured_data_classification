@@ -18,7 +18,7 @@ def get_results(query, start=1):
 fout = open('results.json', 'w')
 
 keywords = map(str.strip, open('keywords.txt').readlines())
-for i in range(4):
+for i in range(4,8):
     start = 1+i*10
     for q in keywords:
         print "Querying", q, "and start =", start

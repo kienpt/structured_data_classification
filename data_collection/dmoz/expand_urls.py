@@ -35,7 +35,7 @@ def expand(urls_file, output_file):
                 url2topic[url] = ""
 
     urls = url2topic.keys()
-    #Download.download(urls, html_dir)
+    Download.download(urls, html_dir)
 
     print "Download finished!"
     print "Extracting outlinks..."
