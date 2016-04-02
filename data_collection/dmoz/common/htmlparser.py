@@ -21,14 +21,13 @@ class HTMLParser:
             - url: url of the html source, used to construct absolute url from relative url
             - html: html source
         Returns:
-            - links: extracted links
+            - links: extracted (normalized and validated) links
         '''
         match = HTMLParser.LINK_PATTERN.findall(html)
         links = set([])
         for link in match:
             link = urlparse.urljoin(url, link)
             link = URLUtility.validate_link(link)
-            link = URLUtility.normalize(link)
             if link:
                 link = URLUtility.normalize(link)
                 if link:

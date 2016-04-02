@@ -13,9 +13,9 @@ import sys
 from multiprocessing import Process
 import traceback
 
-RECIPE = re.compile(r"<[^<]+?((itemtype\s*?=\s*?(\"|\')http://schema\.org/Recipe(\"|\'))|(vocab\s*?=\s*?(\"|\')http://schema\.org/?(\"|\')\s*?typeof\s*?=\s*?(\"|\')Recipe(\"|\')))")
-ITEMPROP = re.compile(r'(itemprop|property)')
-ITEMLIST = re.compile(r'itemListElement')
+RECIPE = re.compile(r"<[^<]+?((itemtype\s*?=\s*?(\"|\')http://schema\.org/Recipe(\"|\'))|(vocab\s*?=\s*?(\"|\')http://schema\.org/?(\"|\')\s*?typeof\s*?=\s*?(\"|\')Recipe(\"|\')))", re.IGNORECASE)
+ITEMPROP = re.compile(r'(itemprop|property)', re.IGNORECASE)
+ITEMLIST = re.compile(r'itemListElement', re.IGNORECASE)
 
 def find_pattern_pages(filenames, indir, outdir, pattern):
     '''
