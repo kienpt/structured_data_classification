@@ -14,9 +14,10 @@ from htmlparser import HTMLParser
 import os
 import json
 
+'''
 def expand(urls_file, output_file):
     out = open(output_file, "w") 
-    html_dir = "html" 
+    html_dir = "recipe" 
     if not os.path.exists(html_dir): 
         os.makedirs(html_dir)
     
@@ -35,15 +36,18 @@ def expand(urls_file, output_file):
                 url2topic[url] = ""
 
     urls = url2topic.keys()
-    Download.download(urls, html_dir)
+    #Download.download(urls, html_dir)
 
     print "Download finished!"
     print "Extracting outlinks..."
+'''
 
-    files = os.listdir(html_dir)
+def expand(indir, output_file):
+    files = os.listdir(indir)
     uniq_links = set()#many seed urls come from the same site, so there exists duplicated outlinks from seed urls
+    out = open(output_file, "w") 
     for f in files:
-        filename = html_dir + "/" + f
+        filename = indir + "/" + f
         with open(filename) as lines:
             for line in lines:
                 data = json.loads(line)
@@ -58,11 +62,12 @@ def expand(urls_file, output_file):
                             uniq_links.add(link)
                             out.write(link.encode('utf-8') + "\n")
                 if url not in links:
-                    out.write(url + "\n")
+                    out.write(url.encode('utf-8') + "\n")
                     
     out.close()
 
+
 if __name__=="__main__":
-    urls_file = sys.argv[1]
+    indir = sys.argv[1]
     output_file = sys.argv[2]
-    expand(urls_file, output_file)
+    expand(indir, output_file)

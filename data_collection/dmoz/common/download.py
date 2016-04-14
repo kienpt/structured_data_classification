@@ -23,7 +23,7 @@ class Download:
         Returns:
             - urls: list of urls
         '''
-        urls = []
+        urls = set([])
         files = os.listdir(output_dir)
         for f in files:
             filename = output_dir + "/" + f
@@ -32,10 +32,11 @@ class Download:
                     try:
                         data = json.loads(line)
                         url = data["url"]
-                        urls.append(url)
+                        urls.add(url)
                     except:
                         print "Error while reading json line"
                         continue
+            print "Finished reading " + filename
         return urls 
 
     @staticmethod
@@ -93,13 +94,15 @@ class Download:
                     left_urls.append(url)
             Download.download(left_urls, output_dir, PROCESS_NUMBER, recrawl)
 
-def test(infile):
-    urls = []
+def test(infile, outdir):
+    urls = set([])
     with open(infile) as lines:
         for line in lines:
-            url = line.strip("\n")
-            urls.append(url)
-    Download.download(urls, 'html')
+            url = line.strip("\n").split("\t")[0]
+            url = URLUtility.normalize(url) 
+            urls.add(url)
+    urls = list(urls)
+    Download.download(urls, outdir)
 
 if __name__=="__main__":
-    test(sys.argv[1])
+    test(sys.argv[1], sys.argv[2])

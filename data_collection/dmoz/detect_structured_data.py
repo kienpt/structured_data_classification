@@ -38,26 +38,29 @@ def find_pattern_pages(filenames, indir, outdir, pattern):
                     total += 1
                     data = json.loads(line)
                     html = data['text']
-                    match = pattern.search(html)
+                    match = pattern.search(html) #SCHEMA.ORG pattern
                     if total%5000 == 0:
                         print f + ":" + str(hit) + ":" +  str(total)
                     if match:
+                        #Extract the structured data part
                         start = match.start(0)
                         anchor_text = match.group(0)
                         element_name = anchor_text.split(' ')[0].strip('<').strip()
+                        #print element_name
                         element_count = 1
-                        element_pattern = re.compile(r'</?'+element_name+r'>?')
+                        element_pattern = re.compile(r'</?'+element_name+r'>?', re.IGNORECASE)
                         search_start = match.end(0)
                         while element_count > 0:
                             element_match = element_pattern.search(html[search_start:])
                             if element_match:
-                                if '/' in element_match.group(0):
+                                #if '/' in element_match.group(0):
+                                if element_match.group(0)[1] == '/':#Is this a close tag
                                     element_count -= 1
                                 else:
                                     element_count += 1
                                 search_start += element_match.end(0)
                             else:
-                                print "Malformed format!", data['url']
+                                #If there is no element_match, that means the close element tag does not exist
                                 search_start = len(html)
                                 break
                         structured_data = html[start:search_start]
@@ -82,7 +85,7 @@ def main(argv):
         os.makedirs(outdir)
 
     #Default
-    PROCESS_NUMBER = 8
+    PROCESS_NUMBER = 1
     pattern = RECIPE
 
     if len(argv) == 3:

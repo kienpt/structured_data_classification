@@ -15,6 +15,9 @@ RECIPE = re.compile(r"<[^<]+?((itemtype\s*?=\s*?(\"|\')http://schema\.org/Recipe
 #ITEMLIST = re.compile(r"itemprop=\"itemListElement\"", re.IGNORECASE)
 
 def select_positive(files, indir, outdir, pattern):
+    '''
+    Select example that follows the regex patterns
+    '''
     for f in files:
         filename = indir + "/" + f
         outfile = outdir + "/" + f

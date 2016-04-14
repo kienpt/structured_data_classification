@@ -51,7 +51,10 @@ class HTMLParser:
         links = set()
         for tag in soup.findAll('a', href=True):
             link = tag['href']
-            link = urlparse.urljoin(url, link)
+            try:
+                link = urlparse.urljoin(url, link)
+            except:
+                continue
             link = URLUtility.validate_link(link)
             if link:
                 link = URLUtility.normalize(link)
