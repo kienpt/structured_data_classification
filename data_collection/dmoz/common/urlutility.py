@@ -88,8 +88,12 @@ class URLUtility:
         #Extract network location
         try:
             url = url.lower()
+            #Remove the part after '#' i.e http://abc.com/index.html#abcd -> http://abc.com/index.html
+            if '#' in url:
+                url = url.split("#")[0]
             url = url.strip("/")
             url = url.split()[0] #If a link contains space, only keep the first part before the space
+            
 
             if len(url) > 8:
                 if url[:7] == 'http://':

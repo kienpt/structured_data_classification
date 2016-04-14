@@ -6,7 +6,8 @@ Usage:
 import sys
 import requests
 import os
-sys.path.append(os.path.dirname(__file__) + "/common")
+#sys.path.append(os.path.dirname(__file__) + "/common")
+sys.path.append("common")
 from urlutility import URLUtility 
 from download import Download
 from htmlparser import HTMLParser
@@ -16,6 +17,8 @@ import json
 def expand(urls_file, output_file):
     out = open(output_file, "w") 
     html_dir = "html" 
+    if not os.path.exists(html_dir): 
+        os.makedirs(html_dir)
     
     #Download and extract in-domain outlinks from urls_file
     url2topic = {}
@@ -38,6 +41,7 @@ def expand(urls_file, output_file):
     print "Extracting outlinks..."
 
     files = os.listdir(html_dir)
+    uniq_links = set()#many seed urls come from the same site, so there exists duplicated outlinks from seed urls
     for f in files:
         filename = html_dir + "/" + f
         with open(filename) as lines:
@@ -50,7 +54,9 @@ def expand(urls_file, output_file):
                 links = HTMLParser.extract_links_bs(url, html_content)
                 for link in links:
                     if URLUtility.is_same_site(url, link):
-                        out.write(link.encode('utf-8') + "\n")
+                        if link not in uniq_links:
+                            uniq_links.add(link)
+                            out.write(link.encode('utf-8') + "\n")
                 if url not in links:
                     out.write(url + "\n")
                     
