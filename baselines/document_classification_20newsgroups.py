@@ -49,6 +49,16 @@ from sklearn.utils.extmath import density
 from sklearn import metrics
 from utils import prepare_data
 
+def autolabel(rects, n):
+    # attach some text labels
+    name = [str(i) + "%" for i in n]
+    for ii,rect in enumerate(rects):
+        height = rect.get_height()
+        #plt.text(rect.get_x()+rect.get_width()/2., 1.02*height, '%s'% (name[ii]),
+                                 #ha='center', va='bottom')
+        width = rect.get_width()
+        plt.text(width + 0.4, rect.get_y() + 0.15, '%s'% (name[ii]))
+
 
 # Display progress logs on stdout
 logging.basicConfig(level=logging.INFO,
@@ -90,6 +100,7 @@ print()
 ###############################################################################
 # Load some categories from the training set
 print("Loading data...")
+#data_train, data_test = prepare_data('pos', 'neg', 0.8)
 data_train, data_test = prepare_data('../data_collection/google/google-positive-text', '../data_collection/google/google-negative-text', 0.8)
 print('Data loaded')
 
@@ -260,7 +271,7 @@ results.append(benchmark(Pipeline([
 ])))
 
 # make some plots
-
+'''
 indices = np.arange(len(results))
 
 results = [[x[i] for x in results] for i in range(4)]
@@ -284,3 +295,21 @@ for i, c in zip(indices, clf_names):
     plt.text(-.3, i, c)
 
 plt.show()
+'''
+
+y_pos = np.arange(len(results))
+
+results = [[x[i] for x in results] for i in range(4)]
+
+clf_names, score, training_time, test_time = results
+
+fig, ax = plt.subplots()
+rects = ax.barh(y_pos, score, align='center', alpha=0.5, color='blue')
+ax.set_xlim([0, 1])
+plt.yticks(y_pos, clf_names)
+plt.xlabel('Accuracy')
+autolabel(rects, score)
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
