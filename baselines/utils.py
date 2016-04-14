@@ -4,6 +4,7 @@ import os
 import json
 import re 
 import numpy as np
+from sklearn.utils import check_random_state
 pattern = re.compile('[\W_]+')
 
 class Bunch(dict):
@@ -69,8 +70,26 @@ def fetch_data(indir, y_value=1):
 
 def split_train_test(positive_data, negative_data, ratio=0.5):
     # return train and test data
-    print ""
 
+    #merge
+    data = positive_data.data + negative_data.data
+    target = np.concatenate((positive_data.target, negative_data.target))
+    all_data = Bunch(data=data, target=target)
+    
+    #shuffle
+    random_state = check_random_state(42)
+    indices = np.arange(all_data.target.shape[0])
+    random_state.shuffle(indices)
+    all_data.target = all_data.target[indices]
+    # Use an object array to shuffle: avoids memory copy
+    data_lst = np.array(all_data.data, dtype=object)
+    data_lst = data_lst[indices]
+    all_data.data = data_lst.tolist()
+
+    split_point = int(all_data.target.shape[0] * ratio)
+    data_train = Bunch(data = all_data.data[:split_point], target = all_data.target[:split_point])
+    data_test = Bunch(data = all_data.data[split_point:], target = all_data.target[split_point:])
+    return data_train, data_test
 
 def prepare_data(positive_dir, negative_dir):
     positive_data = fetch_data(positive_dir, 1)
@@ -78,7 +97,11 @@ def prepare_data(positive_dir, negative_dir):
     data_train, data_test = split_train_test(positive_data, negative_data, 0.5)
     return data_train, data_test
 
-def test():
+def test_preprocess():
     print preprocess_text("aDKJJGEflkk323*6ld^^^j")
 
+def test():
+    prepare_data("pos", "neg")
+
 test()
+    
