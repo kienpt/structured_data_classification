@@ -8,7 +8,7 @@ import sys
 import re
 import os
 import json
-from multiprocessing import Process
+from multiprocessing import Process, cpu_count
 import traceback
 
 RECIPE = re.compile(r"<[^<]+?((itemtype\s*?=\s*?(\"|\')http://schema\.org/Recipe(\"|\'))|(vocab\s*?=\s*?(\"|\')http://schema\.org/?(\"|\')\s*?typeof\s*?=\s*?(\"|\')Recipe(\"|\')))", re.IGNORECASE)
@@ -47,7 +47,7 @@ def main(argv):
 
     #Default
     pattern = RECIPE
-    PROCESS_NUMBER = 8
+    PROCESS_NUMBER = cpu_count()
     if len(argv) == 3:
         PROCESS_NUMBER = int(argv[3])
     jobs = []

@@ -10,7 +10,7 @@ import re
 import os
 import json
 import sys
-from multiprocessing import Process
+from multiprocessing import Process, cpu_count
 import traceback
 
 RECIPE = re.compile(r"<[^<]+?((itemtype\s*?=\s*?(\"|\')http://schema\.org/Recipe(\"|\'))|(vocab\s*?=\s*?(\"|\')http://schema\.org/?(\"|\')\s*?typeof\s*?=\s*?(\"|\')Recipe(\"|\')))", re.IGNORECASE)
@@ -85,7 +85,7 @@ def main(argv):
         os.makedirs(outdir)
 
     #Default
-    PROCESS_NUMBER = 1
+    PROCESS_NUMBER = cpu_count()
     pattern = RECIPE
 
     if len(argv) == 3:

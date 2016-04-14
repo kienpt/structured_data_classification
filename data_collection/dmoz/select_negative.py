@@ -5,10 +5,11 @@ import sys
 import re
 import os
 import json
+sys.path.append(os.path.dirname(__file__) + "/common")
 sys.path.append("common")
 from urlutility import URLUtility 
 from exporturls import ExportURL
-from multiprocessing import Process
+from multiprocessing import Process, cpu_count
 import traceback
 import exporturls
 
@@ -54,11 +55,11 @@ def main(argv):
         pos_sites.add(site)
     
     print len(pos_sites)
-    return
+    # return
 
     #Default
     pattern = RECIPE
-    PROCESS_NUMBER = 8
+    PROCESS_NUMBER = cpu_count()
     if len(argv) == 4:
         PROCESS_NUMBER = int(argv[4])
     jobs = []
