@@ -57,8 +57,7 @@ def autolabel(rects, n):
         #plt.text(rect.get_x()+rect.get_width()/2., 1.02*height, '%s'% (name[ii]),
                                  #ha='center', va='bottom')
         width = rect.get_width()
-        plt.text(width + 0.4, rect.get_y() + 0.15, '%s'% (name[ii]))
-
+        plt.text(width, rect.get_y() + 0.15, '%.2f'% (n[ii]))
 
 # Display progress logs on stdout
 logging.basicConfig(level=logging.INFO,
