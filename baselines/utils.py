@@ -96,10 +96,10 @@ def split_train_test(positive_data, negative_data, ratio=0.5):
     data_test = Bunch(data = all_data.data[split_point:], target = all_data.target[split_point:])
     return data_train, data_test
 
-def prepare_data(positive_dir, negative_dir):
+def prepare_data(positive_dir, negative_dir, ratio=0.5):
     positive_data = fetch_data(positive_dir, 1)
     negative_data = fetch_data(negative_dir, 0)
-    data_train, data_test = split_train_test(positive_data, negative_data, 0.5)
+    data_train, data_test = split_train_test(positive_data, negative_data, ratio)
     return data_train, data_test
 
 def test_preprocess():
@@ -108,5 +108,5 @@ def test_preprocess():
 def test():
     prepare_data("pos", "neg")
 
-test()
+# test()
     

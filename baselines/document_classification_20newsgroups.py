@@ -90,10 +90,10 @@ print()
 ###############################################################################
 # Load some categories from the training set
 print("Loading data...")
-data_train, data_test = prepare_data('../data_collection/google/google-positive-text/html_00.json', '../data_collection/google/google-negative-text/html_00.json')
+data_train, data_test = prepare_data('../data_collection/google/google-positive-text/html_00.json', '../data_collection/google/google-negative-text/html_00.json', 0.8)
 print('Data loaded')
 
-categories = ['negative, positive']
+categories = ['negative', 'positive']
 
 
 def size_mb(docs):
