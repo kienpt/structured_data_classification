@@ -15,10 +15,10 @@ def get_results(query, start=1):
 
 # print get_results('pizza')
 
-fout = open('results.json', 'w')
+fout = open('results-8-12.json', 'w')
 
 keywords = map(str.strip, open('keywords.txt').readlines())
-for i in range(4,8):
+for i in range(8,12):
     start = 1+i*10
     for q in keywords:
         print "Querying", q, "and start =", start
