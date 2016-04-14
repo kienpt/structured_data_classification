@@ -47,6 +47,7 @@ from sklearn.neighbors import NearestCentroid
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.utils.extmath import density
 from sklearn import metrics
+from utils import prepare_data
 
 
 # Display progress logs on stdout
@@ -69,19 +70,12 @@ op.add_option("--top10",
               action="store_true", dest="print_top10",
               help="Print ten most discriminative terms per class"
                    " for every classifier.")
-op.add_option("--all_categories",
-              action="store_true", dest="all_categories",
-              help="Whether to use all categories or not.")
 op.add_option("--use_hashing",
               action="store_true",
               help="Use a hashing vectorizer.")
 op.add_option("--n_features",
               action="store", type=int, default=2 ** 16,
               help="n_features when using the hashing vectorizer.")
-op.add_option("--filtered",
-              action="store_true",
-              help="Remove newsgroup information that is easily overfit: "
-                   "headers, signatures, and quoting.")
 
 (opts, args) = op.parse_args()
 if len(args) > 0:
@@ -95,34 +89,11 @@ print()
 
 ###############################################################################
 # Load some categories from the training set
-if opts.all_categories:
-    categories = None
-else:
-    categories = [
-        'alt.atheism',
-        'talk.religion.misc',
-        'comp.graphics',
-        'sci.space',
-    ]
+print("Loading data...")
+data_train, data_test = prepare_data('../data_collection/google/google-positive-text/html_00.json', '../data_collection/google/google-negative-text/html_00.json')
+print('Data loaded')
 
-if opts.filtered:
-    remove = ('headers', 'footers', 'quotes')
-else:
-    remove = ()
-
-print("Loading 20 newsgroups dataset for categories:")
-print(categories if categories else "all")
-
-data_train = fetch_20newsgroups(subset='train', categories=categories,
-                                shuffle=True, random_state=42,
-                                remove=remove)
-
-data_test = fetch_20newsgroups(subset='test', categories=categories,
-                               shuffle=True, random_state=42,
-                               remove=remove)
-print('data loaded')
-
-categories = data_train.target_names    # for case categories == None
+categories = ['negative, positive']
 
 
 def size_mb(docs):

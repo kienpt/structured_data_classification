@@ -62,8 +62,13 @@ def fetch_data(indir, y_value=1):
     # read and preprocess text, then assign label
     data = []
     target = []
-    for fname in os.listdir(indir):
-        for line in open(indir+'/'+fname):
+    if os.path.isdir(indir):
+        for fname in os.listdir(indir):
+            for line in open(indir+'/'+fname):
+                data.append(preprocess_text(json.loads(line)['extract_text']))
+                target.append(y_value)
+    else:
+        for line in open(indir):
             data.append(preprocess_text(json.loads(line)['extract_text']))
             target.append(y_value)
     return Bunch(data=data, target=np.array(target))
