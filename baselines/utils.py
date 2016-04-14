@@ -3,6 +3,7 @@
 import os
 import json
 import re 
+import numpy as np
 pattern = re.compile('[\W_]+')
 
 class Bunch(dict):
@@ -64,7 +65,7 @@ def fetch_data(indir, y_value=1):
         for line in open(indir+'/'+fname):
             data.append(preprocess_text(json.loads(line)['extract_text']))
             target.append(y_value)
-    return Bunch(data=data, target=target)
+    return Bunch(data=data, target=np.array(target))
 
 def split_train_test(positive_data, negative_data, ratio=0.5):
     # return train and test data
