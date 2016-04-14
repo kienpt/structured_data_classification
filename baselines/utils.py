@@ -53,7 +53,7 @@ def preprocess_text(text):
     #- lowercase
     clean_text = text.lower()
     #- strip everything but numbers and chars
-    clean_text = pattern.sub('', clean_text)
+    clean_text = pattern.sub(' ', clean_text)
 
     return clean_text
 
