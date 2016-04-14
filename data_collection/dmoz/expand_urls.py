@@ -6,7 +6,7 @@ Usage:
 import sys
 import requests
 import os
-#sys.path.append(os.path.dirname(__file__) + "/common")
+sys.path.append(os.path.dirname(__file__) + "/common")
 sys.path.append("common")
 from urlutility import URLUtility 
 from download import Download
