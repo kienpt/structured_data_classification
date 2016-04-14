@@ -2,6 +2,7 @@ import os
 import json
 from urlutility import URLUtility 
 import sys
+import traceback
 
 class ExportURL:
 
@@ -27,7 +28,10 @@ class ExportURL:
         urls = ExportURL.load_urls(indir)
         out = open(outfile, "w")
         for url in urls:
-            out.write(url + "\n")
+            try:
+                out.write(url.encode('utf-8') + "\n")
+            except:
+                traceback.print_exc()
         out.close()
 
     @staticmethod
@@ -36,8 +40,13 @@ class ExportURL:
         uniq_hosts = set([])
         out = open(outfile, "w")
         for url in urls:
-            host = URLUtility.get_host(url)
-            out.write(url + "\n")
+            try:
+                host = URLUtility.get_host(url)
+                if host not in uniq_hosts:
+                    uniq_hosts.add(host)
+                    out.write(host.encode('utf-8') + "\n")
+            except:
+                traceback.print_exc()
         out.close()
        
 def main(argv):

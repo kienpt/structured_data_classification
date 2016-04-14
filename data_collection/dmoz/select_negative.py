@@ -15,6 +15,7 @@ import exporturls
 RECIPE = re.compile(r'(http://schema\.org/Recipe)|(\"http://schema.org/\" typeof=\"Recipe\")', re.IGNORECASE)
 
 def select_negative(filenames, indir, outdir, pattern, pos_sites):
+    print len(pos_sites)
     for f in filenames:
         infile = indir + "/" + f
         outfile = outdir + "/" + f
@@ -30,6 +31,7 @@ def select_negative(filenames, indir, outdir, pattern, pos_sites):
                         match = pattern.search(html)
                         if match == None:
                             out.write(line)
+                    print site
                 except:
                     traceback.print_exc()
                     print "Error processing " + url 
@@ -51,6 +53,8 @@ def main(argv):
         site = URLUtility.get_host(url)   
         pos_sites.add(site)
     
+    print len(pos_sites)
+    return
 
     #Default
     pattern = RECIPE
