@@ -7,11 +7,12 @@ import os
 import json
 sys.path.append("common")
 from urlutility import URLUtility 
+from exporturls import ExportURL
 from multiprocessing import Process
 import traceback
 import exporturls
 
-RECIPE = re.compile(r'http://schema\.org/Recipe', re.IGNORECASE)
+RECIPE = re.compile(r'(http://schema\.org/Recipe)|(\"http://schema.org/\" typeof=\"Recipe\")', re.IGNORECASE)
 
 def select_negative(filenames, indir, outdir, pattern, pos_sites):
     for f in filenames:
@@ -44,7 +45,7 @@ def main(argv):
     if not os.path.exists(outdir): 
         os.makedirs(outdir)
 
-    pos_urls = load_urls(posdir)
+    pos_urls = ExportURL.load_urls(posdir)
     pos_sites = set([])
     for url in pos_urls:
         site = URLUtility.get_host(url)   
