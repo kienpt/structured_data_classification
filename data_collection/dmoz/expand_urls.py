@@ -11,7 +11,6 @@ sys.path.append("common")
 from urlutility import URLUtility 
 from download import Download
 from htmlparser import HTMLParser
-import os
 import json
 
 '''
