@@ -47,6 +47,7 @@ from sklearn.neighbors import NearestCentroid
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.utils.extmath import density
 from sklearn import metrics
+from utils import prepare_data
 
 
 # Display progress logs on stdout
@@ -95,34 +96,10 @@ print()
 
 ###############################################################################
 # Load some categories from the training set
-if opts.all_categories:
-    categories = None
-else:
-    categories = [
-        'alt.atheism',
-        'talk.religion.misc',
-        'comp.graphics',
-        'sci.space',
-    ]
-
-if opts.filtered:
-    remove = ('headers', 'footers', 'quotes')
-else:
-    remove = ()
-
-print("Loading 20 newsgroups dataset for categories:")
-print(categories if categories else "all")
-
-data_train = fetch_20newsgroups(subset='train', categories=categories,
-                                shuffle=True, random_state=42,
-                                remove=remove)
-
-data_test = fetch_20newsgroups(subset='test', categories=categories,
-                               shuffle=True, random_state=42,
-                               remove=remove)
+data_train, data_test = prepare_data('../data_collection/google/google-positive-text/html_00.json', '../data_collection/google/google-negative-text/html_00.json')
 print('data loaded')
 
-categories = data_train.target_names    # for case categories == None
+categories = ['negative, positive']
 
 
 def size_mb(docs):
