@@ -70,19 +70,12 @@ op.add_option("--top10",
               action="store_true", dest="print_top10",
               help="Print ten most discriminative terms per class"
                    " for every classifier.")
-op.add_option("--all_categories",
-              action="store_true", dest="all_categories",
-              help="Whether to use all categories or not.")
 op.add_option("--use_hashing",
               action="store_true",
               help="Use a hashing vectorizer.")
 op.add_option("--n_features",
               action="store", type=int, default=2 ** 16,
               help="n_features when using the hashing vectorizer.")
-op.add_option("--filtered",
-              action="store_true",
-              help="Remove newsgroup information that is easily overfit: "
-                   "headers, signatures, and quoting.")
 
 (opts, args) = op.parse_args()
 if len(args) > 0:
@@ -96,8 +89,9 @@ print()
 
 ###############################################################################
 # Load some categories from the training set
+print("Loading data...")
 data_train, data_test = prepare_data('../data_collection/google/google-positive-text/html_00.json', '../data_collection/google/google-negative-text/html_00.json')
-print('data loaded')
+print('Data loaded')
 
 categories = ['negative, positive']
 
