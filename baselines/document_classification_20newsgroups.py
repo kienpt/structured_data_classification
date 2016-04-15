@@ -100,7 +100,7 @@ print()
 # Load some categories from the training set
 print("Loading data...")
 #data_train, data_test = prepare_data('pos', 'neg', 0.8)
-data_train, data_test = prepare_data('../data_collection/google/google-positive-text', '../data_collection/google/google-negative-text', 0.8)
+data_train, data_test = prepare_data('../data_collection/google/google-positive-text/html_01.json', '../data_collection/google/google-negative-text/html_07.json', 0.8)
 print('Data loaded')
 
 # print(data_test)
