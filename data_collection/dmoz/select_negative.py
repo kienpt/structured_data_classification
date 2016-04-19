@@ -16,7 +16,6 @@ import exporturls
 RECIPE = re.compile(r'(http://schema\.org/Recipe)|(\"http://schema.org/\" typeof=\"Recipe\")', re.IGNORECASE)
 
 def select_negative(filenames, indir, outdir, pattern, pos_sites):
-    print len(pos_sites)
     for f in filenames:
         infile = indir + "/" + f
         outfile = outdir + "/" + f
@@ -32,7 +31,6 @@ def select_negative(filenames, indir, outdir, pattern, pos_sites):
                         match = pattern.search(html)
                         if match == None:
                             out.write(line)
-                    print site
                 except:
                     traceback.print_exc()
                     print "Error processing " + url 
@@ -40,10 +38,14 @@ def select_negative(filenames, indir, outdir, pattern, pos_sites):
 
 def main(argv):
     if len(argv) == 0:
-        print '[candidate dir] [positive dir] [output dir]'
-        return
-    indir = argv[0] #Directory that contains candidate
-    posdir = argv[1] #Directory that contains positive examples 
+        print "Args: [All HTML Directory] [Candidate Directory] [Output Directory]"     
+        print "[All HTML Directory]: Directory that contains collected pages in JSON format"
+        print "[Candidate Directory]: Directory that contains candidate pages"
+        print "[Output Directory]: Empty directory - if not existed, it will be created automatically"
+        sys.exit(1)
+
+    indir = argv[0] #Directory that contains all collected pages 
+    posdir = argv[1] #Directory that contains candidate pages
     outdir = argv[2] #Output
     if not os.path.exists(outdir): 
         os.makedirs(outdir)
@@ -54,12 +56,11 @@ def main(argv):
         site = URLUtility.get_host(url)   
         pos_sites.add(site)
     
-    print len(pos_sites)
-    # return
+    print "Number of candidate sites: " + str(len(pos_sites))
 
     #Default
     pattern = RECIPE
-    PROCESS_NUMBER = cpu_count()
+    PROCESS_NUMBER = cpu_count()-2
     if len(argv) == 4:
         PROCESS_NUMBER = int(argv[4])
     jobs = []

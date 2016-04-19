@@ -11,7 +11,7 @@ from urlutility import URLUtility
 import json
 import traceback
 
-requests.packages.urllib3.disable_warnings()
+#requests.packages.urllib3.disable_warnings()
 
 class Download:
     header = {'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36'}
@@ -105,4 +105,11 @@ def test(infile, outdir):
     Download.download(urls, outdir)
 
 if __name__=="__main__":
-    test(sys.argv[1], sys.argv[2])
+    argv = sys.argv[1:]
+    if len(argv) == 0:
+        print "Args: [Input Directory] [Output Directory]"     
+        print "[Input Directory]: Directory that contains html pages"
+        print "[Output Directory]: Name of the output file"
+        sys.exit(1)
+
+    test(argv[0], argv[1])

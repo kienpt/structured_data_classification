@@ -67,6 +67,13 @@ def expand(indir, output_file):
 
 
 if __name__=="__main__":
-    indir = sys.argv[1]
-    output_file = sys.argv[2]
+    argv = sys.argv[1:]
+    if len(argv) == 0:
+        print "Args: [Input Directory] [Output File]"     
+        print "[Input Directory]: Directory that contains html pages"
+        print "[Output File]: Name of the output file"
+        sys.exit(1)
+
+    indir = argv[0]
+    output_file = sys.argv[1]
     expand(indir, output_file)

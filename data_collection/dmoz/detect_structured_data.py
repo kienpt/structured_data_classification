@@ -79,6 +79,12 @@ def find_pattern_pages(filenames, indir, outdir, pattern):
         out.close()
 
 def main(argv):
+    if len(argv) == 0:
+        print "Args: [Input Directory] [Output Directory]"     
+        print "[Input Directory]: Directory that contains html content in JSON format"
+        print "[Output Directory]: Empty directory - if not existed, it will be created automatically"
+        sys.exit(1)
+
     indir = argv[0]
     outdir = argv[1]
     if not os.path.exists(outdir): 

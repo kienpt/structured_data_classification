@@ -65,7 +65,14 @@ def get_links(outfile, topics):
     out.close()
 
 if __name__=="__main__":
-    outfile = sys.argv[2]
-    topicfile = sys.argv[1]
+    argv = sys.argv[1:]
+    if len(argv) == 0:
+        print "Args: [Topic File] [Output File]"     
+        print "[Topic File]: File that contains list of topic"
+        print "[Output File]: Name of the output file"
+        sys.exit(1)
+   
+    topicfile = argv[0]
+    outfile = argv[1]
     topics = read_topics(topicfile)
     get_links(outfile, topics)

@@ -7,6 +7,7 @@ import traceback
 sys.path.append(os.path.dirname(__file__) + "/common")
 sys.path.append("common")
 from boilerpipe.extract import Extractor
+from bs4 import BeautifulSoup
 
 extractor_type = 'DefaultExtractor'
 '''
@@ -31,8 +32,13 @@ def extract_process(filenames, indir, outdir):
                 try:
                     data = json.loads(line)
                     html = data['text']
-                    text = html2text(html)
+                    print "before"
+                    print data['url']
+                    print data['text']
+                    text = html2text_bp(html)
+                    print "after"
                     if text:
+                        print text
                         js = {}
                         js['url'] = data['url']
                         js['text'] = text
@@ -46,7 +52,7 @@ def extract(indir, outdir):
         os.makedirs(outdir)
 
     #Default
-    PROCESS_NUMBER = 8
+    PROCESS_NUMBER = 1
 
     jobs = []
     files = os.listdir(indir)
@@ -66,7 +72,7 @@ def extract(indir, outdir):
         p.join()
 
 
-def html2text(html):
+def html2text_bp(html):
     text = None
     try:
         extractor = Extractor(extractor=extractor_type, html=html)
@@ -75,7 +81,23 @@ def html2text(html):
         traceback.print_exc()
     return text
 
+def html2text_bs(html):
+    text = None
+    try:
+        soup = BeautifulSoup(html)
+        text = soup.get_text()
+    except:
+        traceback.print_exc()
+    return text
+
 if __name__=="__main__":
-    indir = sys.argv[1]
-    outdir = sys.argv[2]
+    argv = sys.argv[1:]
+    if len(argv) == 0:
+        print "Args: [Input Directory] [Output Directory]"     
+        print "[Input Directory]: Directory that contains html pages"
+        print "[Output Directory]: Empty directory - if not existed, it will be created automatically"
+        sys.exit(1)
+
+    indir = argv[0]
+    outdir = argv[1]
     extract(indir, outdir)

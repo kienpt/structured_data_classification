@@ -40,6 +40,12 @@ def select_positive(files, indir, outdir, pattern):
             out.close()
 
 def main(argv):
+    if len(argv) == 0:
+        print "Args: [Candidate Directory] [Output Directory]"     
+        print "[Candidate Directory]: Directory that contains candidate pages"
+        print "[Output Directory]: Empty directory - if not existed, it will be created automatically"
+        sys.exit(1)
+
     indir = argv[0]
     outdir = argv[1]
     if not os.path.exists(outdir): 
