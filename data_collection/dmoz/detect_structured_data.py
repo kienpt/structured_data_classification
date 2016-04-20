@@ -13,9 +13,18 @@ import sys
 from multiprocessing import Process, cpu_count
 import traceback
 
-RECIPE = re.compile(r"<[^<]+?((itemtype\s*?=\s*?(\"|\')http://schema\.org/Recipe(\"|\'))|(vocab\s*?=\s*?(\"|\')http://schema\.org/?(\"|\')\s*?typeof\s*?=\s*?(\"|\')Recipe(\"|\')))", re.IGNORECASE)
+#RECIPE = re.compile(r"<[^<]+?((itemtype\s*?=\s*?(\"|\')http://schema\.org/Recipe(\"|\'))|(vocab\s*?=\s*?(\"|\')http://schema\.org/?(\"|\')\s*?typeof\s*?=\s*?(\"|\')Recipe(\"|\')))", re.IGNORECASE)
 ITEMPROP = re.compile(r'(itemprop|property)', re.IGNORECASE)
 ITEMLIST = re.compile(r'itemListElement', re.IGNORECASE)
+
+def generate_pattern(topic):
+    '''
+    Return compiled regex pattern to match topic
+    '''
+    pattern_string = r"<[^<]+?((itemtype\s*?=\s*?(\"|\')http://schema\.org/" + topic + "(\"|\'))|(vocab\s*?=\s*?(\"|\')http://schema\.org/?(\"|\')\s*?typeof\s*?=\s*?(\"|\')" + topic + "(\"|\')))"
+    pattern = re.compile(pattern_string, re.IGNORECASE)
+    return pattern
+    
 
 def find_pattern_pages(filenames, indir, outdir, pattern):
     '''
@@ -80,19 +89,21 @@ def find_pattern_pages(filenames, indir, outdir, pattern):
 
 def main(argv):
     if len(argv) == 0:
-        print "Args: [Input Directory] [Output Directory]"     
+        print "Args: [Topic] [Input Directory] [Output Directory]"     
+        print "[Topic]: Schema.org topic"
         print "[Input Directory]: Directory that contains html content in JSON format"
         print "[Output Directory]: Empty directory - if not existed, it will be created automatically"
         sys.exit(1)
 
-    indir = argv[0]
-    outdir = argv[1]
+    topic = argv[0]
+    indir = argv[1]
+    outdir = argv[2]
     if not os.path.exists(outdir): 
         os.makedirs(outdir)
 
     #Default
-    PROCESS_NUMBER = cpu_count()
-    pattern = RECIPE
+    PROCESS_NUMBER = cpu_count()-2
+    pattern = generate_pattern(topic)
 
     if len(argv) == 3:
         PROCESS_NUMBER = int(argv[3])

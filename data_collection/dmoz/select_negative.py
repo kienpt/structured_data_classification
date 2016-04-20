@@ -13,7 +13,12 @@ from multiprocessing import Process, cpu_count
 import traceback
 import exporturls
 
-RECIPE = re.compile(r'(http://schema\.org/Recipe)|(\"http://schema.org/\" typeof=\"Recipe\")', re.IGNORECASE)
+#RECIPE = re.compile(r'(http://schema\.org/Recipe)|(\"http://schema.org/\" typeof=\"Recipe\")', re.IGNORECASE)
+
+def generate_pattern(topic):
+    pattern_string = r'(http://schema\.org/' + topic + ')|(\"http://schema.org/\" typeof=\"' + topic + '\")'
+    pattern = re.compile(pattern_string, re.IGNORECASE)
+    return pattern
 
 def select_negative(filenames, indir, outdir, pattern, pos_sites):
     for f in filenames:
@@ -39,14 +44,16 @@ def select_negative(filenames, indir, outdir, pattern, pos_sites):
 def main(argv):
     if len(argv) == 0:
         print "Args: [All HTML Directory] [Candidate Directory] [Output Directory]"     
+        print "[Topic]: topic from schema.org"
         print "[All HTML Directory]: Directory that contains collected pages in JSON format"
         print "[Candidate Directory]: Directory that contains candidate pages"
         print "[Output Directory]: Empty directory - if not existed, it will be created automatically"
         sys.exit(1)
 
-    indir = argv[0] #Directory that contains all collected pages 
-    posdir = argv[1] #Directory that contains candidate pages
-    outdir = argv[2] #Output
+    topic = argv[0]
+    indir = argv[1] #Directory that contains all collected pages 
+    posdir = argv[2] #Directory that contains candidate pages
+    outdir = argv[3] #Output
     if not os.path.exists(outdir): 
         os.makedirs(outdir)
 
@@ -58,10 +65,10 @@ def main(argv):
     
     print "Number of candidate sites: " + str(len(pos_sites))
 
-    #Default
-    pattern = RECIPE
+    pattern = generate_pattern(topic)
+
     PROCESS_NUMBER = cpu_count()-2
-    if len(argv) == 4:
+    if len(argv) == 5:
         PROCESS_NUMBER = int(argv[4])
     jobs = []
     queues = []

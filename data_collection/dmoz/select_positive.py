@@ -11,8 +11,15 @@ import json
 from multiprocessing import Process, cpu_count
 import traceback
 
-RECIPE = re.compile(r"<[^<]+?((itemtype\s*?=\s*?(\"|\')http://schema\.org/Recipe(\"|\'))|(vocab\s*?=\s*?(\"|\')http://schema\.org/?(\"|\')\s*?typeof\s*?=\s*?(\"|\')Recipe(\"|\')))", re.IGNORECASE)
-#ITEMLIST = re.compile(r"itemprop=\"itemListElement\"", re.IGNORECASE)
+#RECIPE = re.compile(r"<[^<]+?((itemtype\s*?=\s*?(\"|\')http://schema\.org/Recipe(\"|\'))|(vocab\s*?=\s*?(\"|\')http://schema\.org/?(\"|\')\s*?typeof\s*?=\s*?(\"|\')Recipe(\"|\')))", re.IGNORECASE)
+
+def generate_pattern(topic):
+    '''
+    Return compiled regex pattern to match topic
+    '''
+    pattern_string = r"<[^<]+?((itemtype\s*?=\s*?(\"|\')http://schema\.org/" + topic + "(\"|\'))|(vocab\s*?=\s*?(\"|\')http://schema\.org/?(\"|\')\s*?typeof\s*?=\s*?(\"|\')" + topic + "(\"|\')))"
+    pattern = re.compile(pattern_string, re.IGNORECASE)
+    return pattern
 
 def select_positive(files, indir, outdir, pattern):
     '''
@@ -41,20 +48,21 @@ def select_positive(files, indir, outdir, pattern):
 
 def main(argv):
     if len(argv) == 0:
-        print "Args: [Candidate Directory] [Output Directory]"     
+        print "Args: [Topic] [Candidate Directory] [Output Directory]"     
+        print "[Topic] Topic from schema.org"
         print "[Candidate Directory]: Directory that contains candidate pages"
         print "[Output Directory]: Empty directory - if not existed, it will be created automatically"
         sys.exit(1)
 
-    indir = argv[0]
-    outdir = argv[1]
+    topic = argv[0]
+    indir = argv[1]
+    outdir = argv[2]
     if not os.path.exists(outdir): 
         os.makedirs(outdir)
 
-    #Default
-    pattern = RECIPE
-    PROCESS_NUMBER = cpu_count()
-    if len(argv) == 3:
+    pattern = generate_pattern(topic)
+    PROCESS_NUMBER = cpu_count()-2
+    if len(argv) == 4:
         PROCESS_NUMBER = int(argv[3])
     jobs = []
     queues = []

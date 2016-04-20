@@ -7,6 +7,6 @@ python expand_urls.py recipe_original expanded_recipe_urls.txt
 python common/download.py expanded_recipe_urls.txt recipe_expanded
 
 #Data Processing: Extraction/Cleaning/Annotation
-python detect_structured_data.py html recipe_positive_candidate
-python select_positive.py recipe_positive_candidate recipe_positive
-python select_negative.py recipe_expanded recipe_candidate recipe_negative
+python detect_structured_data.py recipe html recipe_positive_candidate
+python select_positive.py recipe recipe_positive_candidate recipe_positive
+python select_negative.py recipe recipe_expanded recipe_candidate recipe_negative
