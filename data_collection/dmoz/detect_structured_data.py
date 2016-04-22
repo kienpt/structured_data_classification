@@ -17,11 +17,15 @@ import traceback
 ITEMPROP = re.compile(r'(itemprop|property)', re.IGNORECASE)
 ITEMLIST = re.compile(r'itemListElement', re.IGNORECASE)
 
-def generate_pattern(topic):
+def generate_pattern(topics):
     '''
     Return compiled regex pattern to match topic
     '''
-    pattern_string = r"<[^<]+?((itemtype\s*?=\s*?(\"|\')http://schema\.org/" + topic + "(\"|\'))|(vocab\s*?=\s*?(\"|\')http://schema\.org/?(\"|\')\s*?typeof\s*?=\s*?(\"|\')" + topic + "(\"|\')))"
+    topics_pattern = '('
+    for topic in topics:
+        topics_pattern += topic + "|"
+    topics_pattern = topics_pattern.strip("|") + ")"
+    pattern_string = r"<[^<]+?((itemtype\s*?=\s*?(\"|\')http://schema\.org/" + topics_pattern + "(\"|\'))|(vocab\s*?=\s*?(\"|\')http://schema\.org/?(\"|\')\s*?typeof\s*?=\s*?(\"|\')" + topics_pattern + "(\"|\')))"
     pattern = re.compile(pattern_string, re.IGNORECASE)
     return pattern
     
@@ -49,8 +53,9 @@ def find_pattern_pages(filenames, indir, outdir, pattern):
                     html = data['text']
                     match = pattern.search(html) #SCHEMA.ORG pattern
                     if total%5000 == 0:
-                        print f + ":" + str(hit) + ":" +  str(total)
+                        print f + "\tFound:" + str(hit) + ":Processed:" +  str(total)
                     if match:
+                        #print match.group(4) #topic
                         #Extract the structured data part
                         start = match.start(0)
                         anchor_text = match.group(0)
@@ -78,6 +83,7 @@ def find_pattern_pages(filenames, indir, outdir, pattern):
                         data['structured'] = structured_data
                         data['itemprop'] = len(item_prop)
                         data['itemlist'] = len(item_list)
+                        data['topic'] = match.group(4).lower()
                         hit += 1
                         out.write(json.dumps(data) + '\n')
                 except:
@@ -90,7 +96,7 @@ def find_pattern_pages(filenames, indir, outdir, pattern):
 def main(argv):
     if len(argv) == 0:
         print "Args: [Topic] [Input Directory] [Output Directory]"     
-        print "[Topic]: Schema.org topic"
+        print "[Topic]: Name of a topic or filename that contains list of topics"
         print "[Input Directory]: Directory that contains html content in JSON format"
         print "[Output Directory]: Empty directory - if not existed, it will be created automatically"
         sys.exit(1)
@@ -103,9 +109,13 @@ def main(argv):
 
     #Default
     PROCESS_NUMBER = cpu_count()-2
-    pattern = generate_pattern(topic)
+    if os.path.isfile(topic):
+        topics = map(str.strip, open(topic).readlines())
+    else:
+        topics = [topic]
+    pattern = generate_pattern(topics)
 
-    if len(argv) == 3:
+    if len(argv) == 4:
         PROCESS_NUMBER = int(argv[3])
     jobs = []
     files = os.listdir(indir)

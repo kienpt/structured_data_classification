@@ -13,13 +13,18 @@ import traceback
 
 #RECIPE = re.compile(r"<[^<]+?((itemtype\s*?=\s*?(\"|\')http://schema\.org/Recipe(\"|\'))|(vocab\s*?=\s*?(\"|\')http://schema\.org/?(\"|\')\s*?typeof\s*?=\s*?(\"|\')Recipe(\"|\')))", re.IGNORECASE)
 
-def generate_pattern(topic):
+def generate_pattern(topics):
     '''
     Return compiled regex pattern to match topic
     '''
-    pattern_string = r"<[^<]+?((itemtype\s*?=\s*?(\"|\')http://schema\.org/" + topic + "(\"|\'))|(vocab\s*?=\s*?(\"|\')http://schema\.org/?(\"|\')\s*?typeof\s*?=\s*?(\"|\')" + topic + "(\"|\')))"
+    topics_pattern = '('
+    for topic in topics:
+        topics_pattern += topic + "|"
+    topics_pattern = topics_pattern.strip("|") + ")"
+    pattern_string = r"<[^<]+?((itemtype\s*?=\s*?(\"|\')http://schema\.org/" + topics_pattern + "(\"|\'))|(vocab\s*?=\s*?(\"|\')http://schema\.org/?(\"|\')\s*?typeof\s*?=\s*?(\"|\')" + topics_pattern + "(\"|\')))"
     pattern = re.compile(pattern_string, re.IGNORECASE)
     return pattern
+
 
 def select_positive(files, indir, outdir, pattern):
     '''
@@ -49,7 +54,7 @@ def select_positive(files, indir, outdir, pattern):
 def main(argv):
     if len(argv) == 0:
         print "Args: [Topic] [Candidate Directory] [Output Directory]"     
-        print "[Topic] Topic from schema.org"
+        print "[Topic]: Name of a topic or filename that contains list of topics"
         print "[Candidate Directory]: Directory that contains candidate pages"
         print "[Output Directory]: Empty directory - if not existed, it will be created automatically"
         sys.exit(1)
@@ -59,8 +64,13 @@ def main(argv):
     outdir = argv[2]
     if not os.path.exists(outdir): 
         os.makedirs(outdir)
+    
+    if os.path.isfile(topic):
+        topics = map(str.strip, open(topic).readlines())
+    else:
+        topics = [topic]
+    pattern = generate_pattern(topics)
 
-    pattern = generate_pattern(topic)
     PROCESS_NUMBER = cpu_count()-2
     if len(argv) == 4:
         PROCESS_NUMBER = int(argv[3])
