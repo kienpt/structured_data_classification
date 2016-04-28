@@ -44,7 +44,6 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.utils.extmath import density
 from sklearn import metrics
 from utils import prepare_data_multiclass
-from utils import prepare_data_oneclass
 
 def plot(results):
     # make some plots

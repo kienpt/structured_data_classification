@@ -104,8 +104,8 @@ def split_train_test_multiclass(all_data, ratio=0.5):
     all_data.data = data_lst.tolist()
 
     split_point = int(all_data.target.shape[0] * ratio)
-    data_train = Bunch(data = all_data.data[:split_point], target = all_data.target[:split_point])
-    data_test = Bunch(data = all_data.data[split_point:], target = all_data.target[split_point:])
+    data_train = Bunch(data = all_data.data[:split_point], target = all_data.target[:split_point], target_names=all_data.target_names)
+    data_test = Bunch(data = all_data.data[split_point:], target = all_data.target[split_point:], target_names=all_data.target_names)
     return data_train, data_test
 
 def split_train_test(positive_data, negative_data, ratio=0.5):
