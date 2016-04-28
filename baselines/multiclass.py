@@ -26,7 +26,7 @@ import numpy as np
 from optparse import OptionParser
 import sys
 from time import time
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import HashingVectorizer
@@ -133,7 +133,6 @@ print("%d documents - %0.3fMB (training set)" % (
 print("%d documents - %0.3fMB (test set)" % (
     len(data_test.data), data_test_size_mb))
 
-categories = ['recipe', 'book', 'review']
 print("%d categories" % len(categories))
 print()
 # split a training set and a test set
