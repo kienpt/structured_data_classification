@@ -8,9 +8,6 @@ by topics using a bag-of-words approach. This example uses a scipy.sparse
 matrix to store the features and demonstrates various classifiers that can
 efficiently handle sparse matrices.
 
-The dataset used in this example is the 20 newsgroups dataset. It will be
-automatically downloaded, then cached.
-
 The bar plot indicates the accuracy, training time (normalized) and test time
 (normalized) of each classifier.
 
@@ -31,7 +28,6 @@ import sys
 from time import time
 import matplotlib.pyplot as plt
 
-from sklearn.datasets import fetch_20newsgroups
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import HashingVectorizer
 from sklearn.feature_selection import SelectKBest, chi2
@@ -47,7 +43,27 @@ from sklearn.neighbors import NearestCentroid
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.utils.extmath import density
 from sklearn import metrics
-from utils import prepare_data
+from utils import prepare_data_multiclass
+from utils import prepare_data_oneclass
+
+def plot(results):
+    # make some plots
+    y_pos = np.arange(len(results))
+    
+    results = [[x[i] for x in results] for i in range(4)]
+    
+    clf_names, score, training_time, test_time = results
+    
+    fig, ax = plt.subplots()
+    rects = ax.barh(y_pos, score, align='center', alpha=0.5, color='blue')
+    ax.set_xlim([0, 1])
+    plt.yticks(y_pos, clf_names)
+    plt.xlabel('Accuracy')
+    autolabel(rects, score)
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
+
 
 def autolabel(rects, n):
     # attach some text labels
@@ -85,12 +101,12 @@ op.add_option("--use_hashing",
 op.add_option("--n_features",
               action="store", type=int, default=2 ** 16,
               help="n_features when using the hashing vectorizer.")
-
 (opts, args) = op.parse_args()
+'''
 if len(args) > 0:
     op.error("this script takes no arguments.")
     sys.exit(1)
-
+'''
 print(__doc__)
 op.print_help()
 print()
@@ -99,11 +115,10 @@ print()
 ###############################################################################
 # Load some categories from the training set
 print("Loading data...")
+input_file = sys.argv[1]
 #data_train, data_test = prepare_data('pos', 'neg', 0.8)
-data_train, data_test = prepare_data_oneclass('../data_collection/google/google-positive-text/html_01.json', '../data_collection/google/google-negative-text/html_07.json', 0.8)
+data_train, data_test = prepare_data_multiclass(input_file)
 print('Data loaded')
-
-categories = ['negative', 'positive']
 
 
 def size_mb(docs):
@@ -111,14 +126,17 @@ def size_mb(docs):
 
 data_train_size_mb = size_mb(data_train.data)
 data_test_size_mb = size_mb(data_test.data)
+categories = data_train.target_names
+
 
 print("%d documents - %0.3fMB (training set)" % (
     len(data_train.data), data_train_size_mb))
 print("%d documents - %0.3fMB (test set)" % (
     len(data_test.data), data_test_size_mb))
+
+categories = ['recipe', 'book', 'review']
 print("%d categories" % len(categories))
 print()
-
 # split a training set and a test set
 y_train, y_test = data_train.target, data_test.target
 
@@ -267,46 +285,4 @@ results.append(benchmark(Pipeline([
   ('classification', LinearSVC())
 ])))
 
-# make some plots
-'''
-indices = np.arange(len(results))
-
-results = [[x[i] for x in results] for i in range(4)]
-
-clf_names, score, training_time, test_time = results
-training_time = np.array(training_time) / np.max(training_time)
-test_time = np.array(test_time) / np.max(test_time)
-
-plt.figure(figsize=(12, 8))
-plt.title("Score")
-plt.barh(indices, score, .2, label="score", color='r')
-plt.barh(indices + .3, training_time, .2, label="training time", color='g')
-plt.barh(indices + .6, test_time, .2, label="test time", color='b')
-plt.yticks(())
-plt.legend(loc='best')
-plt.subplots_adjust(left=.25)
-plt.subplots_adjust(top=.95)
-plt.subplots_adjust(bottom=.05)
-
-for i, c in zip(indices, clf_names):
-    plt.text(-.3, i, c)
-
-plt.show()
-'''
-
-y_pos = np.arange(len(results))
-
-results = [[x[i] for x in results] for i in range(4)]
-
-clf_names, score, training_time, test_time = results
-
-fig, ax = plt.subplots()
-rects = ax.barh(y_pos, score, align='center', alpha=0.5, color='blue')
-ax.set_xlim([0, 1])
-plt.yticks(y_pos, clf_names)
-plt.xlabel('Accuracy')
-autolabel(rects, score)
-plt.grid(True)
-plt.tight_layout()
-plt.show()
 

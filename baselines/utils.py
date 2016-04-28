@@ -76,19 +76,21 @@ def fetch_data(indir, y_value=1):
 def fetch_data_multiclass(indir):
     data = []
     target = []
+    target_names = set([])
     if os.path.isdir(indir):
         for fname in os.listdir(indir):
             for line in open(indir+'/'+fname):
                 extracted_text = json.loads(line)
                 data.append(preprocess_text(obj['extract_text']))
                 target.append(obj['topic'])
+                target_names.add(obj['topic'])
     else:
         for line in open(indir):
-           extracted_text = json.loads(line)
-           data.append(preprocess_text(obj['extract_text']))
-           target.append(obj['topic'])
-
-    return Bunch(data=data, target=np.array(target))
+            obj= json.loads(line)
+            data.append(preprocess_text(obj['extract_text']))
+            target.append(obj['topic'])
+            target_names.add(obj['topic'])
+    return Bunch(data=data, target=np.array(target), target_names=list(target_names))
 
 def split_train_test_multiclass(all_data, ratio=0.5):
     #shuffle
@@ -135,7 +137,7 @@ def prepare_data_oneclass(positive_dir, negative_dir, ratio=0.5):
     data_train, data_test = split_train_test(positive_data, negative_data, ratio)
     return data_train, data_test
 
-def prepare_data_multiclass(positive_dir, ratio-0.5):
+def prepare_data_multiclass(positive_dir, ratio=0.5):
     data = fetch_data_multiclass(positive_dir)
     data_train, data_test = split_train_test_multiclass(data)
     return data_train, data_test

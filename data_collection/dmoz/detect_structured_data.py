@@ -21,11 +21,14 @@ def generate_pattern(topics):
     '''
     Return compiled regex pattern to match topic
     '''
-    topics_pattern = '('
+    topics_pattern1 = '(?P<topic1>'
+    topics_pattern2 = '(?P<topic2>'
     for topic in topics:
-        topics_pattern += topic + "|"
-    topics_pattern = topics_pattern.strip("|") + ")"
-    pattern_string = r"<[^<]+?((itemtype\s*?=\s*?(\"|\')http://schema\.org/" + topics_pattern + "(\"|\'))|(vocab\s*?=\s*?(\"|\')http://schema\.org/?(\"|\')\s*?typeof\s*?=\s*?(\"|\')" + topics_pattern + "(\"|\')))"
+        topics_pattern1 += topic + "|"
+        topics_pattern2 += topic + "|"
+    topics_pattern1 = topics_pattern1.strip("|") + ")"
+    topics_pattern2 = topics_pattern2.strip("|") + ")"
+    pattern_string = r"<[^<]+?((itemtype\s*?=\s*?(\"|\')http://schema\.org/" + topics_pattern1 + "(\"|\'))|(vocab\s*?=\s*?(\"|\')http://schema\.org/?(\"|\')\s*?typeof\s*?=\s*?(\"|\')" + topics_pattern2 + "(\"|\')))"
     pattern = re.compile(pattern_string, re.IGNORECASE)
     return pattern
     
@@ -83,7 +86,10 @@ def find_pattern_pages(filenames, indir, outdir, pattern):
                         data['structured'] = structured_data
                         data['itemprop'] = len(item_prop)
                         data['itemlist'] = len(item_list)
-                        data['topic'] = match.group(4).lower()
+                        if match.group('topic1'):
+                            data['topic'] = match.group('topic1').lower()
+                        else:
+                            data['topic'] = match.group('topic2').lower()
                         hit += 1
                         out.write(json.dumps(data) + '\n')
                 except:
