@@ -26,7 +26,7 @@ import numpy as np
 from optparse import OptionParser
 import sys
 from time import time
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import HashingVectorizer
@@ -44,6 +44,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.utils.extmath import density
 from sklearn import metrics
 from utils import prepare_data_multiclass
+import traceback
 
 def plot(results):
     # make some plots
@@ -244,7 +245,10 @@ for clf, name in (
         (RandomForestClassifier(n_estimators=100), "Random forest")):
     print('=' * 80)
     print(name)
-    results.append(benchmark(clf))
+    try:
+        results.append(benchmark(clf))
+    except:
+        traceback.print_exc()
 
 for penalty in ["l2", "l1"]:
     print('=' * 80)
@@ -283,4 +287,4 @@ results.append(benchmark(Pipeline([
   ('classification', LinearSVC())
 ])))
 
-
+plot(results)
