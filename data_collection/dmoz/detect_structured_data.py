@@ -12,9 +12,9 @@ import json
 import sys
 from multiprocessing import Process, cpu_count
 import traceback
+import microdata
 
 #RECIPE = re.compile(r"<[^<]+?((itemtype\s*?=\s*?(\"|\')http://schema\.org/Recipe(\"|\'))|(vocab\s*?=\s*?(\"|\')http://schema\.org/?(\"|\')\s*?typeof\s*?=\s*?(\"|\')Recipe(\"|\')))", re.IGNORECASE)
-ITEMPROP = re.compile(r'(itemprop|property)', re.IGNORECASE)
 ITEMLIST = re.compile(r'itemListElement', re.IGNORECASE)
 
 def generate_pattern(topics):
@@ -41,9 +41,14 @@ def find_pattern_pages(filenames, indir, outdir, pattern):
         - indir: directory that contains filenames
         - pattern: regex pattern of the target object
         - outdir: output directory
+    Note:
+        HTML -> {Objects}
+        Object -> {Items}
+        Item -> {Itemtype, {ItemProperties]}
     '''
-    total = 0
-    hit = 0
+    allPages = 0
+    objPages = 0
+    obj = 0
     for f in filenames:
         infile = indir + "/" + f
         outfile = outdir + "/" + f
@@ -51,47 +56,60 @@ def find_pattern_pages(filenames, indir, outdir, pattern):
         with open(infile) as lines:
             for line in lines:
                 try:
-                    total += 1
+                    allPages += 1
                     data = json.loads(line)
                     html = data['text']
-                    match = pattern.search(html) #SCHEMA.ORG pattern
-                    if total%5000 == 0:
-                        print f + "\tFound:" + str(hit) + ":Processed:" +  str(total)
-                    if match:
-                        #print match.group(4) #topic
-                        #Extract the structured data part
-                        start = match.start(0)
-                        anchor_text = match.group(0)
-                        element_name = anchor_text.split(' ')[0].strip('<').strip()
-                        #print element_name
-                        element_count = 1
-                        element_pattern = re.compile(r'</?'+element_name+r'>?', re.IGNORECASE)
-                        search_start = match.end(0)
-                        while element_count > 0:
-                            element_match = element_pattern.search(html[search_start:])
-                            if element_match:
-                                #if '/' in element_match.group(0):
-                                if element_match.group(0)[1] == '/':#Is this a close tag
-                                    element_count -= 1
+                    data['microdata'] = []
+                    data['topic'] = []
+                    cont = True
+                    while (cont):
+                        match = pattern.search(html) #SCHEMA.ORG pattern
+                        if allPages%2000 == 0:
+                            print f + "\t#Object:" + str(obj) + ":#PageHasObject:" + str(objPages) + ":#Pages:" +  str(allPages)
+                        if match:
+                            #print match.group(4) #topic
+                            #Extract the structured data part
+                            start = match.start(0)
+                            anchor_text = match.group(0)
+                            element_name = anchor_text.split(' ')[0].strip('<').strip()
+                            #print element_name
+                            element_count = 1
+                            element_pattern = re.compile(r'</?'+element_name+r'>?', re.IGNORECASE)
+                            search_start = match.end(0)
+                            while element_count > 0:
+                                element_match = element_pattern.search(html[search_start:])
+                                if element_match:
+                                    #if '/' in element_match.group(0):
+                                    if element_match.group(0)[1] == '/':#Is this a close tag
+                                        element_count -= 1
+                                    else:
+                                        element_count += 1
+                                    search_start += element_match.end(0)
                                 else:
-                                    element_count += 1
-                                search_start += element_match.end(0)
-                            else:
-                                #If there is no element_match, that means the close element tag does not exist
-                                search_start = len(html)
-                                break
-                        structured_data = html[start:search_start]
-                        item_prop = ITEMPROP.findall(structured_data)
-                        item_list = ITEMLIST.findall(structured_data)
-                        data['structured'] = structured_data
-                        data['itemprop'] = len(item_prop)
-                        data['itemlist'] = len(item_list)
-                        if match.group('topic1'):
-                            data['topic'] = match.group('topic1').lower()
+                                    #If there is no element_match, that means the close element tag does not exist
+                                    search_start = len(html)
+                                    break
+                            structured_data = html[start:search_start]
+                            html = html[search_start:]
+                            if len(html) < 10:
+                                cont = False
+                            try:
+                                items = microdata.get_items(structured_data) 
+                                #Ref: https://github.com/edsu/microdata
+                                for item in items: 
+                                    itemtype = item.itemtype
+                                    topic = str(itemtype[0]).split("/")[-1]
+                                    data['topic'].append(topic)
+                                    data['microdata'].append(item.json_dict())
+                                    obj += 1
+                            except:
+                                traceback.print_exc()
+                                continue
                         else:
-                            data['topic'] = match.group('topic2').lower()
-                        hit += 1
-                        out.write(json.dumps(data) + '\n')
+                            cont = False
+                    if len(data['microdata']) > 0:
+                        objPages += 1
+                    out.write(json.dumps(data) + '\n')
                 except:
                     traceback.print_exc()
                     print "Failed to read a line"
@@ -127,7 +145,7 @@ def main(argv):
     files = os.listdir(indir)
     queues = []
 
-    print "[Filename]:[#Hit pages]:[#Total pages]"
+    print "[Filename]:[Number of objects]:[Number of pages that contain object]:[Number of scanned pages]"
     #Assign files to each process
     for i in range(PROCESS_NUMBER):
         q = []
