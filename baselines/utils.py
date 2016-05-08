@@ -128,11 +128,12 @@ def get_text(prop):
     prop_text = ''
     for prop_child in prop['properties'].values():
         if len(prop_child) == 0: continue
-        if type(prop_child[0]) == type({}):
-            for prop_child_child in prop_child:
+        for prop_child_child in prop_child:
+            # print "xxx", prop_child_child
+            if type(prop_child_child) == type({}):
                 prop_text += ' ' + get_text(prop_child_child)
-        else:
-            prop_text += ' ' + ' '.join(prop_child)
+            else:
+                prop_text += ' ' + prop_child_child
     return prop_text
 
 def fetch_data_multilabel(indir):
