@@ -5,7 +5,7 @@ import json
 import re 
 import numpy as np
 from sklearn.utils import check_random_state
-from sklearn.preprocessing import MultiLabelBinarizer
+# from sklearn.preprocessing import MultiLabelBinarizer
 pattern = re.compile('[\W_]+')
 
 class Bunch(dict):
@@ -93,6 +93,48 @@ def fetch_data_multiclass(indir):
             target_names.add(obj['one_topic'])
     return Bunch(data=data, target=np.array(target), target_names=list(target_names))
 
+def fetch_data_multiclass_structured(indir):
+    data = []
+    target = []
+    target_names = set([])
+    if os.path.isdir(indir):
+        for fname in os.listdir(indir):
+            for line in open(indir+'/'+fname):
+                extracted_text = json.loads(line)
+                # data.append(preprocess_text(obj['extract_text']))
+                # this is different from normal multiclass where extract_text is used
+                # this time we are going to use data from structured data
+                for prop in obj['microdata']:
+                    if prop['type'][0].split('/')[-1].lower() == obj['one_topic']:
+                        data.append(preprocess_text(get_text(prop)))
+                        # print obj['one_topic'], preprocess_text(get_text(prop))
+                target.append(obj['one_topic'])
+                target_names.add(obj['one_topic'])
+    else:
+        for line in open(indir):
+            obj= json.loads(line)
+            # data.append(preprocess_text(obj['extract_text']))
+            # this is different from normal multiclass where extract_text is used
+            # this time we are going to use data from structured data
+            for prop in obj['microdata']:
+                if prop['type'][0].split('/')[-1].lower() == obj['one_topic']:
+                    data.append(preprocess_text(get_text(prop)))
+                    # print obj['one_topic'], preprocess_text(get_text(prop))
+            target.append(obj['one_topic'])
+            target_names.add(obj['one_topic'])
+    return Bunch(data=data, target=np.array(target), target_names=list(target_names))
+
+def get_text(prop):
+    prop_text = ''
+    for prop_child in prop['properties'].values():
+        if len(prop_child) == 0: continue
+        if type(prop_child[0]) == type({}):
+            for prop_child_child in prop_child:
+                prop_text += ' ' + get_text(prop_child_child)
+        else:
+            prop_text += ' ' + ' '.join(prop_child)
+    return prop_text
+
 def fetch_data_multilabel(indir):
     data = []
     target = []
@@ -166,6 +208,11 @@ def prepare_data_oneclass(positive_dir, negative_dir, ratio=0.5):
 
 def prepare_data_multiclass(positive_dir, ratio=0.5):
     data = fetch_data_multiclass(positive_dir)
+    data_train, data_test = split_train_test_multiclass(data)
+    return data_train, data_test
+
+def prepare_data_multiclass_structured(positive_dir, ratio=0.5):
+    data = fetch_data_multiclass_structured(positive_dir)
     data_train, data_test = split_train_test_multiclass(data)
     return data_train, data_test
 
