@@ -83,14 +83,14 @@ def fetch_data_multiclass(indir):
             for line in open(indir+'/'+fname):
                 extracted_text = json.loads(line)
                 data.append(preprocess_text(obj['extract_text']))
-                target.append(obj['topic'])
-                target_names.add(obj['topic'])
+                target.append(obj['one_topic'])
+                target_names.add(obj['one_topic'])
     else:
         for line in open(indir):
             obj= json.loads(line)
             data.append(preprocess_text(obj['extract_text']))
-            target.append(obj['topic'])
-            target_names.add(obj['topic'])
+            target.append(obj['one_topic'])
+            target_names.add(obj['one_topic'])
     return Bunch(data=data, target=np.array(target), target_names=list(target_names))
 
 def fetch_data_multilabel(indir):
@@ -119,7 +119,7 @@ def fetch_data_multilabel(indir):
     target = MultiLabelBinarizer().fit_transform(target)
     return Bunch(data=data, target=np.array(target), target_names=list(target_names))
 
-def split_train_test_multiclass(all_data, ratio=0.5):
+def split_train_test_multiclass(all_data, ratio=0.8):
     #shuffle
     random_state = check_random_state(42)
     indices = np.arange(all_data.target.shape[0])

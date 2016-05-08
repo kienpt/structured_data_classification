@@ -69,6 +69,7 @@ def find_pattern_pages(filenames, indir, outdir, pattern):
                         if match:
                             #print match.group(4) #topic
                             #Extract the structured data part
+                            #Extract the structured data text
                             start = match.start(0)
                             anchor_text = match.group(0)
                             element_name = anchor_text.split(' ')[0].strip('<').strip()
@@ -98,10 +99,13 @@ def find_pattern_pages(filenames, indir, outdir, pattern):
                                 #Ref: https://github.com/edsu/microdata
                                 for item in items: 
                                     itemtype = item.itemtype
-                                    topic = str(itemtype[0]).split("/")[-1]
-                                    data['topic'].append(topic)
-                                    data['microdata'].append(item.json_dict())
-                                    obj += 1
+                                    if itemtype:
+                                        topic = str(itemtype[0]).split("/")[-1]
+                                        data['topic'].append(topic)
+                                        data['microdata'].append(item.json_dict())
+                                        obj += 1
+                                    else:
+                                        continue
                             except:
                                 traceback.print_exc()
                                 continue
@@ -109,7 +113,7 @@ def find_pattern_pages(filenames, indir, outdir, pattern):
                             cont = False
                     if len(data['microdata']) > 0:
                         objPages += 1
-                    out.write(json.dumps(data) + '\n')
+                        out.write(json.dumps(data) + '\n')
                 except:
                     traceback.print_exc()
                     print "Failed to read a line"

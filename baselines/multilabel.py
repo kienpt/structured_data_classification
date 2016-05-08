@@ -249,7 +249,6 @@ def benchmark(clf):
 def main():
     t0 = time()
     results = []
-    '''
     for clf, name in (
             (RidgeClassifier(tol=1e-2, solver="lsqr"), "Ridge Classifier"),
             (KNeighborsClassifier(n_neighbors=10), "kNN"),
@@ -260,8 +259,7 @@ def main():
             results.append(benchmark(clf))
         except:
             traceback.print_exc()
-    '''
-    clf = OneVsRestClassifier(SVC(kernel='linear', cache_size=5000, max_iter=1000))
+    #clf = OneVsRestClassifier(SVC(kernel='linear', cache_size=5000, max_iter=1000))
     results.append(benchmark(clf))
     print(results)
     #plot(results)

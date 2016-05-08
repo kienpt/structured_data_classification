@@ -98,7 +98,7 @@ def test(infile, outdir):
     urls = set([])
     with open(infile) as lines:
         for line in lines:
-            url = line.strip("\n").split("\t")[0]
+            url = line.strip().split("\t")[0]
             url = URLUtility.normalize(url) 
             urls.add(url)
     urls = list(urls)

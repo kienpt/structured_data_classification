@@ -12,10 +12,16 @@ class ExportURL:
         Return urls from all files in indir directory
         '''
         urls = set([]) #return
-        files = os.listdir(indir)
+        files = []
+        if os.path.isdir(indir):
+            fnames = os.listdir(indir)
+            files = [indir + "/"+ f for f in fnames]
+        else:
+            #indir is a file
+            files.append(indir)
+
         for f in files:
-            filename = indir + "/" + f
-            with open(filename) as lines:
+            with open(f) as lines:
                 for line in lines:
                     data = json.loads(line)
                     url = data['url']
