@@ -48,6 +48,7 @@ import traceback
 
 def plot(results):
     # make some plots
+    print(results)
     y_pos = np.arange(len(results))
     
     results = [[x[i] for x in results] for i in range(4)]
@@ -62,6 +63,7 @@ def plot(results):
     autolabel(rects, score)
     plt.grid(True)
     plt.tight_layout()
+    plt.savefig('multiclass.pdf', bbox_inches='tight')
     plt.show()
 
 
