@@ -5,6 +5,7 @@ import json
 import re 
 import numpy as np
 from sklearn.utils import check_random_state
+from sklearn.preprocessing import MultiLabelBinarizer
 pattern = re.compile('[\W_]+')
 
 class Bunch(dict):
@@ -92,6 +93,32 @@ def fetch_data_multiclass(indir):
             target_names.add(obj['topic'])
     return Bunch(data=data, target=np.array(target), target_names=list(target_names))
 
+def fetch_data_multilabel(indir):
+    data = []
+    target = []
+    target_names = set([])
+    if os.path.isdir(indir):
+        for fname in os.listdir(indir):
+            for line in open(indir+'/'+fname):
+                extracted_text = json.loads(line)
+                data.append(preprocess_text(obj['extract_text']))
+                labels = list(set(obj['uniq_topic']))
+                labels = [label.lower() for label in labels]
+                target.append(labels)
+                for label in labels:
+                    target_names.add(label)
+    else:
+        for line in open(indir):
+            obj= json.loads(line)
+            data.append(preprocess_text(obj['extract_text']))
+            labels = list(set(obj['uniq_topic']))
+            labels = [label.lower() for label in labels]
+            target.append(labels)
+            for label in labels:
+                target_names.add(label)
+    target = MultiLabelBinarizer().fit_transform(target)
+    return Bunch(data=data, target=np.array(target), target_names=list(target_names))
+
 def split_train_test_multiclass(all_data, ratio=0.5):
     #shuffle
     random_state = check_random_state(42)
@@ -140,6 +167,11 @@ def prepare_data_oneclass(positive_dir, negative_dir, ratio=0.5):
 def prepare_data_multiclass(positive_dir, ratio=0.5):
     data = fetch_data_multiclass(positive_dir)
     data_train, data_test = split_train_test_multiclass(data)
+    return data_train, data_test
+
+def prepare_data_multilabel(positive_dir, ratio=0.5):
+    data = fetch_data_multilabel(positive_dir)
+    data_train, data_test = split_train_test_multiclass(data) #multilabel splitting is the same as multiclass 
     return data_train, data_test
 
 def test_preprocess():
