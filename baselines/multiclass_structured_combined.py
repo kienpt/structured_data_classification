@@ -45,6 +45,7 @@ from sklearn.utils.extmath import density
 from sklearn import metrics
 from utils import prepare_data_multiclass_structured_combined, plot
 import traceback
+import pickle
 
 # Display progress logs on stdout
 logging.basicConfig(level=logging.INFO,
