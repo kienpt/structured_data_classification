@@ -238,12 +238,12 @@ def benchmark(clf):
     return clf_descr, score, train_time, test_time
 
 
+#        (KNeighborsClassifier(n_neighbors=10), "kNN"),
 results = []
 for clf, name in (
         (RidgeClassifier(tol=1e-2, solver="lsqr"), "Ridge Classifier"),
         (Perceptron(n_iter=50), "Perceptron"),
         (PassiveAggressiveClassifier(n_iter=50), "Passive-Aggressive"),
-        (KNeighborsClassifier(n_neighbors=10), "kNN"),
         (RandomForestClassifier(n_estimators=100), "Random forest")):
     print('=' * 80)
     print(name)
