@@ -205,6 +205,7 @@ def benchmark(clf):
         print(metrics.confusion_matrix(y_test, pred))
 
     print()
+    clf_descr = str(clf).split('(')[0]
     pickle.dump(clf, open(sys.argv[0].replace('.py', '.'+clf_descr), 'w'))
     return clf_descr, score, train_time, test_time
 
