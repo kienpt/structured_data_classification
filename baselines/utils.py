@@ -4,6 +4,7 @@ import os
 import json
 import re 
 import numpy as np
+import matplotlib.pyplot as plt
 from sklearn.utils import check_random_state
 # from sklearn.preprocessing import MultiLabelBinarizer
 pattern = re.compile('[\W_]+')
@@ -81,7 +82,7 @@ def fetch_data_multiclass(indir):
     if os.path.isdir(indir):
         for fname in os.listdir(indir):
             for line in open(indir+'/'+fname):
-                extracted_text = json.loads(line)
+                obj = json.loads(line)
                 data.append(preprocess_text(obj['extract_text']))
                 target.append(obj['one_topic'])
                 target_names.add(obj['one_topic'])
@@ -100,16 +101,18 @@ def fetch_data_multiclass_structured(indir):
     if os.path.isdir(indir):
         for fname in os.listdir(indir):
             for line in open(indir+'/'+fname):
-                extracted_text = json.loads(line)
+                obj = json.loads(line)
                 # data.append(preprocess_text(obj['extract_text']))
                 # this is different from normal multiclass where extract_text is used
                 # this time we are going to use data from structured data
                 for prop in obj['microdata']:
                     if prop['type'][0].split('/')[-1].lower() == obj['one_topic']:
-                        data.append(preprocess_text(get_text(prop)))
-                        # print obj['one_topic'], preprocess_text(get_text(prop))
-                target.append(obj['one_topic'])
-                target_names.add(obj['one_topic'])
+                        prop_text = preprocess_text(get_text(prop))
+                        if prop_text.strip() != '':
+                            data.append(prop_text)
+                            # print obj['one_topic'], preprocess_text(get_text(prop))
+                            target.append(obj['one_topic'])
+                            target_names.add(obj['one_topic'])
     else:
         for line in open(indir):
             obj= json.loads(line)
@@ -118,10 +121,49 @@ def fetch_data_multiclass_structured(indir):
             # this time we are going to use data from structured data
             for prop in obj['microdata']:
                 if prop['type'][0].split('/')[-1].lower() == obj['one_topic']:
-                    data.append(preprocess_text(get_text(prop)))
+                    prop_text = preprocess_text(get_text(prop))
+                    if prop_text.strip() != '':
+                        data.append(prop_text)
+                        # print obj['one_topic'], preprocess_text(get_text(prop))
+                        target.append(obj['one_topic'])
+                        target_names.add(obj['one_topic'])
+    return Bunch(data=data, target=np.array(target), target_names=list(target_names))
+
+def fetch_data_multiclass_structured_combined(indir):
+    data = []
+    target = []
+    target_names = set([])
+    if os.path.isdir(indir):
+        for fname in os.listdir(indir):
+            for line in open(indir+'/'+fname):
+                obj = json.loads(line)
+                # data.append(preprocess_text(obj['extract_text']))
+                # this is different from normal multiclass where extract_text is used
+                # this time we are going to use data from structured data
+                prop_text = ''
+                for prop in obj['microdata']:
+                    if prop['type'][0].split('/')[-1].lower() == obj['one_topic']:
+                        prop_text += ' ' + preprocess_text(get_text(prop))
+                if prop_text.strip() != '':
+                    data.append(prop_text)
                     # print obj['one_topic'], preprocess_text(get_text(prop))
-            target.append(obj['one_topic'])
-            target_names.add(obj['one_topic'])
+                    target.append(obj['one_topic'])
+                    target_names.add(obj['one_topic'])
+    else:
+        for line in open(indir):
+            obj= json.loads(line)
+            # data.append(preprocess_text(obj['extract_text']))
+            # this is different from normal multiclass where extract_text is used
+            # this time we are going to use data from structured data
+            prop_text = ''
+            for prop in obj['microdata']:
+                if prop['type'][0].split('/')[-1].lower() == obj['one_topic']:
+                    prop_text = preprocess_text(get_text(prop))
+            if prop_text.strip() != '':
+                data.append(prop_text)
+                # print obj['one_topic'], preprocess_text(get_text(prop))
+                target.append(obj['one_topic'])
+                target_names.add(obj['one_topic'])
     return Bunch(data=data, target=np.array(target), target_names=list(target_names))
 
 def get_text(prop):
@@ -143,7 +185,7 @@ def fetch_data_multilabel(indir):
     if os.path.isdir(indir):
         for fname in os.listdir(indir):
             for line in open(indir+'/'+fname):
-                extracted_text = json.loads(line)
+                obj = json.loads(line)
                 data.append(preprocess_text(obj['extract_text']))
                 labels = list(set(obj['uniq_topic']))
                 labels = [label.lower() for label in labels]
@@ -217,6 +259,11 @@ def prepare_data_multiclass_structured(positive_dir, ratio=0.5):
     data_train, data_test = split_train_test_multiclass(data)
     return data_train, data_test
 
+def prepare_data_multiclass_structured_combined(positive_dir, ratio=0.5):
+    data = fetch_data_multiclass_structured_combined(positive_dir)
+    data_train, data_test = split_train_test_multiclass(data)
+    return data_train, data_test
+
 def prepare_data_multilabel(positive_dir, ratio=0.5):
     data = fetch_data_multilabel(positive_dir)
     data_train, data_test = split_train_test_multiclass(data) #multilabel splitting is the same as multiclass 
@@ -227,6 +274,26 @@ def test_preprocess():
 
 def test():
     prepare_data("pos", "neg")
+
+def plot(results):
+    # make some plots
+    print(results)
+    y_pos = np.arange(len(results))
+    
+    results = [[x[i] for x in results] for i in range(4)]
+    
+    clf_names, score, training_time, test_time = results
+    
+    fig, ax = plt.subplots()
+    rects = ax.barh(y_pos, score, align='center', alpha=0.5, color='blue')
+    ax.set_xlim([0, 1])
+    plt.yticks(y_pos, clf_names)
+    plt.xlabel('Accuracy')
+    autolabel(rects, score)
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig(sys.argv[0].replace('.py', '.pdf'), bbox_inches='tight')
+    plt.show()
 
 # test()
     

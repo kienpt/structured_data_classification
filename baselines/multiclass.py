@@ -43,29 +43,8 @@ from sklearn.neighbors import NearestCentroid
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.utils.extmath import density
 from sklearn import metrics
-from utils import prepare_data_multiclass
+from utils import prepare_data_multiclass, plot
 import traceback
-
-def plot(results):
-    # make some plots
-    print(results)
-    y_pos = np.arange(len(results))
-    
-    results = [[x[i] for x in results] for i in range(4)]
-    
-    clf_names, score, training_time, test_time = results
-    
-    fig, ax = plt.subplots()
-    rects = ax.barh(y_pos, score, align='center', alpha=0.5, color='blue')
-    ax.set_xlim([0, 1])
-    plt.yticks(y_pos, clf_names)
-    plt.xlabel('Accuracy')
-    autolabel(rects, score)
-    plt.grid(True)
-    plt.tight_layout()
-    plt.savefig('multiclass.pdf', bbox_inches='tight')
-    plt.show()
-
 
 def autolabel(rects, n):
     # attach some text labels
@@ -243,7 +222,7 @@ for clf, name in (
         (RidgeClassifier(tol=1e-2, solver="lsqr"), "Ridge Classifier"),
         (Perceptron(n_iter=50), "Perceptron"),
         (PassiveAggressiveClassifier(n_iter=50), "Passive-Aggressive"),
-        (KNeighborsClassifier(n_neighbors=10), "kNN"),
+        # (KNeighborsClassifier(n_neighbors=10), "kNN"),
         (RandomForestClassifier(n_estimators=100), "Random forest")):
     print('=' * 80)
     print(name)
