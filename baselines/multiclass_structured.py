@@ -46,16 +46,6 @@ from sklearn import metrics
 from utils import prepare_data_multiclass_structured, plot
 import traceback
 
-def autolabel(rects, n):
-    # attach some text labels
-    name = [str(i) + "%" for i in n]
-    for ii,rect in enumerate(rects):
-        height = rect.get_height()
-        #plt.text(rect.get_x()+rect.get_width()/2., 1.02*height, '%s'% (name[ii]),
-                                 #ha='center', va='bottom')
-        width = rect.get_width()
-        plt.text(width, rect.get_y() + 0.15, '%.2f'% (n[ii]))
-
 # Display progress logs on stdout
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(message)s')
