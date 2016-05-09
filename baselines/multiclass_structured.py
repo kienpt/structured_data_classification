@@ -45,6 +45,7 @@ from sklearn.utils.extmath import density
 from sklearn import metrics
 from utils import prepare_data_multiclass_structured, plot
 import traceback
+import pickle
 
 # Display progress logs on stdout
 logging.basicConfig(level=logging.INFO,
@@ -205,6 +206,7 @@ def benchmark(clf):
 
     print()
     clf_descr = str(clf).split('(')[0]
+    pickle.dump(clf, open(sys.argv[0].replace('.py', '.'+clf_descr), 'w'))
     return clf_descr, score, train_time, test_time
 
 
