@@ -240,7 +240,7 @@ for penalty in ["l2"]:
                                            penalty=penalty)))
 
 # SVC
-results.append(benchmark(SVC(tol=1e-3, probability=True)))
+# results.append(benchmark(SVC(tol=1e-3, probability=True)))
 
 # Train SGD with Elastic Net penalty
 # print('=' * 80)

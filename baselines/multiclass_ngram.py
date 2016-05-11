@@ -30,6 +30,7 @@ import matplotlib.pyplot as plt
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import HashingVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_selection import SelectKBest, chi2
 from sklearn.linear_model import RidgeClassifier
 from sklearn.pipeline import Pipeline
@@ -118,7 +119,7 @@ if opts.use_hashing:
                                    n_features=opts.n_features)
     X_train = vectorizer.transform(data_train.data)
 else:
-    vectorizer = TfidfVectorizer(sublinear_tf=True, max_df=0.5,
+    vectorizer = CountVectorizer(ngram_range=(1,2), max_df=0.5,
                                  stop_words='english')
     X_train = vectorizer.fit_transform(data_train.data)
 duration = time() - t0
