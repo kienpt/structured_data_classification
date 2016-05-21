@@ -33,7 +33,7 @@ from sklearn.feature_extraction.text import HashingVectorizer
 from sklearn.feature_selection import SelectKBest, chi2
 from sklearn.linear_model import RidgeClassifier
 from sklearn.pipeline import Pipeline
-from sklearn.svm import LinearSVC
+from sklearn.svm import LinearSVC, SVC
 from sklearn.linear_model import SGDClassifier
 from sklearn.linear_model import Perceptron
 from sklearn.linear_model import PassiveAggressiveClassifier
@@ -212,11 +212,12 @@ def benchmark(clf):
 
 results = []
 for clf, name in (
-        (RidgeClassifier(tol=1e-2, solver="lsqr"), "Ridge Classifier"),
-        (Perceptron(n_iter=50), "Perceptron"),
-        (PassiveAggressiveClassifier(n_iter=50), "Passive-Aggressive"),
+        (RidgeClassifier(tol=1e-2, solver="sag"), "Ridge Classifier"),
+        # (Perceptron(n_iter=50), "Perceptron"),
+        # (PassiveAggressiveClassifier(n_iter=50), "Passive-Aggressive"),
         # (KNeighborsClassifier(n_neighbors=10), "kNN"),
-        (RandomForestClassifier(n_estimators=100), "Random forest")):
+        # (RandomForestClassifier(n_estimators=100), "Random forest")
+        ):
     print('=' * 80)
     print(name)
     try:
@@ -224,41 +225,45 @@ for clf, name in (
     except:
         traceback.print_exc()
 
-for penalty in ["l2", "l1"]:
+# for penalty in ["l2", "l1"]:
+for penalty in ["l2"]:
     print('=' * 80)
     print("%s penalty" % penalty.upper())
     # Train Liblinear model
-    results.append(benchmark(LinearSVC(loss='l2', penalty=penalty,
+    results.append(benchmark(LinearSVC(loss='squared_hinge', penalty=penalty,
                                             dual=False, tol=1e-3)))
 
     # Train SGD model
-    results.append(benchmark(SGDClassifier(alpha=.0001, n_iter=50,
+    results.append(benchmark(SGDClassifier(loss='log', alpha=.0001, n_iter=50,
                                            penalty=penalty)))
 
+# SVC
+# results.append(benchmark(SVC(tol=1e-3, probability=True)))
+
 # Train SGD with Elastic Net penalty
-print('=' * 80)
-print("Elastic-Net penalty")
-results.append(benchmark(SGDClassifier(alpha=.0001, n_iter=50,
-                                       penalty="elasticnet")))
+# print('=' * 80)
+# print("Elastic-Net penalty")
+# results.append(benchmark(SGDClassifier(alpha=.0001, n_iter=50,
+#                                        penalty="elasticnet")))
 
 # Train NearestCentroid without threshold
-print('=' * 80)
-print("NearestCentroid (aka Rocchio classifier)")
-results.append(benchmark(NearestCentroid()))
+# print('=' * 80)
+# print("NearestCentroid (aka Rocchio classifier)")
+# results.append(benchmark(NearestCentroid()))
 
 # Train sparse Naive Bayes classifiers
-print('=' * 80)
-print("Naive Bayes")
-results.append(benchmark(MultinomialNB(alpha=.01)))
-results.append(benchmark(BernoulliNB(alpha=.01)))
+# print('=' * 80)
+# print("Naive Bayes")
+# results.append(benchmark(MultinomialNB(alpha=.01)))
+# results.append(benchmark(BernoulliNB(alpha=.01)))
 
-print('=' * 80)
-print("LinearSVC with L1-based feature selection")
-# The smaller C, the stronger the regularization.
-# The more regularization, the more sparsity.
-results.append(benchmark(Pipeline([
-  ('feature_selection', LinearSVC(penalty="l1", dual=False, tol=1e-3)),
-  ('classification', LinearSVC())
-])))
+# print('=' * 80)
+# print("LinearSVC with L1-based feature selection")
+# # The smaller C, the stronger the regularization.
+# # The more regularization, the more sparsity.
+# results.append(benchmark(Pipeline([
+#   ('feature_selection', LinearSVC(penalty="l1", dual=False, tol=1e-3)),
+#   ('classification', LinearSVC())
+# ])))
 
 plot(results)
