@@ -3,8 +3,8 @@
 
 import html5lib
 from HTMLParser import HTMLParser
-
 unescape = HTMLParser().unescape
+from BeautifulSoup import BeautifulSoup
 
 class HTMLExtract(object):
     def __init__(self):
@@ -17,6 +17,23 @@ class HTMLExtract(object):
         dom_builder = html5lib.treebuilders.getTreeBuilder("dom")
         parser = html5lib.HTMLParser(tree=dom_builder)
         self.tree = parser.parse(location, encoding=encoding)
+
+    def parse_unescape(self, location, encoding=None):
+        dom_builder = html5lib.treebuilders.getTreeBuilder("dom")
+        parser = html5lib.HTMLParser(tree=dom_builder)
+        try:
+            location = unescape(location)
+        except:
+            try:
+                location = BeautifulSoup(location, convertEntities=BeautifulSoup.HTML_ENTITIES)
+            except:
+                pass
+        # self.tree = parser.parse(unescape(location), encoding=encoding)
+        try:
+            self.tree = parser.parse(location.strip(), encoding=encoding)
+        except:
+            pass
+            # print location
 
     def extract(self, tags, ignore_tags):
         self.tags = tags
@@ -31,6 +48,8 @@ class HTMLExtract(object):
 
 def _extract(e, tags, ignore_tags, ignore_text=True):
     results = []
+    if e is None:
+        return results
     if e.nodeType == e.TEXT_NODE and not ignore_text:
         text = e.nodeValue.strip()
         # print 'text', text

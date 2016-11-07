@@ -1,0 +1,12 @@
+cookTime
+prepTime
+recipeYield
+author
+ingredients
+recipeInstructions
+totalTime
+description
+image
+name
+title
+url

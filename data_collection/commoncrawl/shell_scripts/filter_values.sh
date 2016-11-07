@@ -1,0 +1,1 @@
+python filter_values.py recipe_data/ingredients.json,recipe_data/recipeInstructions.json recipe_data/prepTime.json,recipe_data/cookTime.json,recipe_data/description.json,recipe_data/url.json,recipe_data/recipeYield.json,recipe_data/author.json,recipe_data/title.json,recipe_data/image.json,recipe_data/totalTime.json,recipe_data/name.json recipe_data

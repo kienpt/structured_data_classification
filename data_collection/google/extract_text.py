@@ -17,6 +17,8 @@ def extract_text(files):
     writer = open(outfile, 'w')
     for line in open(infile):
         data = json.loads(line)
+        if len(data['topic']) == 0:
+            continue
         content = ex.extract(data['text'])
         if content is not None:
             data['extract_text'] = content[2]

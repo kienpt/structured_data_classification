@@ -43,39 +43,9 @@ from sklearn.neighbors import NearestCentroid
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.utils.extmath import density
 from sklearn import metrics
-from utils import prepare_data_multiclass
+from utils import prepare_data_multiclass, plot
 import traceback
-
-def plot(results):
-    # make some plots
-    print(results)
-    y_pos = np.arange(len(results))
-    
-    results = [[x[i] for x in results] for i in range(4)]
-    
-    clf_names, score, training_time, test_time = results
-    
-    fig, ax = plt.subplots()
-    rects = ax.barh(y_pos, score, align='center', alpha=0.5, color='blue')
-    ax.set_xlim([0, 1])
-    plt.yticks(y_pos, clf_names)
-    plt.xlabel('Accuracy')
-    autolabel(rects, score)
-    plt.grid(True)
-    plt.tight_layout()
-    plt.savefig('multiclass.pdf', bbox_inches='tight')
-    plt.show()
-
-
-def autolabel(rects, n):
-    # attach some text labels
-    name = [str(i) + "%" for i in n]
-    for ii,rect in enumerate(rects):
-        height = rect.get_height()
-        #plt.text(rect.get_x()+rect.get_width()/2., 1.02*height, '%s'% (name[ii]),
-                                 #ha='center', va='bottom')
-        width = rect.get_width()
-        plt.text(width, rect.get_y() + 0.15, '%.2f'% (n[ii]))
+import pickle
 
 # Display progress logs on stdout
 logging.basicConfig(level=logging.INFO,
@@ -235,6 +205,7 @@ def benchmark(clf):
 
     print()
     clf_descr = str(clf).split('(')[0]
+    pickle.dump(clf, open(sys.argv[0].replace('.py', '.'+clf_descr), 'w'))
     return clf_descr, score, train_time, test_time
 
 
