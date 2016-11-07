@@ -43,7 +43,7 @@ from sklearn.neighbors import NearestCentroid
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.utils.extmath import density
 from sklearn import metrics
-from utils import prepare_data_multiclass_structured_combined, plot
+from utils import prepare_data_multiclass, plot
 import traceback
 import pickle
 
@@ -89,8 +89,7 @@ print()
 print("Loading data...")
 input_file = sys.argv[1]
 #data_train, data_test = prepare_data('pos', 'neg', 0.8)
-# data_train, data_test = prepare_data_multiclass(input_file)
-data_train, data_test = prepare_data_multiclass_structured_combined(input_file)
+data_train, data_test = prepare_data_multiclass(input_file)
 print('Data loaded')
 
 
@@ -213,8 +212,8 @@ def benchmark(clf):
 results = []
 for clf, name in (
         (RidgeClassifier(tol=1e-2, solver="sag"), "Ridge Classifier"),
-        # (Perceptron(n_iter=50), "Perceptron"),
-        # (PassiveAggressiveClassifier(n_iter=50), "Passive-Aggressive"),
+        (Perceptron(n_iter=50), "Perceptron"),
+        (PassiveAggressiveClassifier(n_iter=50), "Passive-Aggressive"),
         # (KNeighborsClassifier(n_neighbors=10), "kNN"),
         # (RandomForestClassifier(n_estimators=100), "Random forest")
         ):
@@ -238,32 +237,32 @@ for penalty in ["l2"]:
                                            penalty=penalty)))
 
 # SVC
-# results.append(benchmark(SVC(tol=1e-3, probability=True)))
+results.append(benchmark(SVC(tol=1e-3, probability=True)))
 
 # Train SGD with Elastic Net penalty
-# print('=' * 80)
-# print("Elastic-Net penalty")
-# results.append(benchmark(SGDClassifier(alpha=.0001, n_iter=50,
-#                                        penalty="elasticnet")))
+print('=' * 80)
+print("Elastic-Net penalty")
+results.append(benchmark(SGDClassifier(alpha=.0001, n_iter=50,
+                                       penalty="elasticnet")))
 
 # Train NearestCentroid without threshold
-# print('=' * 80)
-# print("NearestCentroid (aka Rocchio classifier)")
-# results.append(benchmark(NearestCentroid()))
+print('=' * 80)
+print("NearestCentroid (aka Rocchio classifier)")
+results.append(benchmark(NearestCentroid()))
 
 # Train sparse Naive Bayes classifiers
-# print('=' * 80)
-# print("Naive Bayes")
-# results.append(benchmark(MultinomialNB(alpha=.01)))
-# results.append(benchmark(BernoulliNB(alpha=.01)))
+print('=' * 80)
+print("Naive Bayes")
+results.append(benchmark(MultinomialNB(alpha=.01)))
+results.append(benchmark(BernoulliNB(alpha=.01)))
 
-# print('=' * 80)
-# print("LinearSVC with L1-based feature selection")
-# # The smaller C, the stronger the regularization.
-# # The more regularization, the more sparsity.
-# results.append(benchmark(Pipeline([
-#   ('feature_selection', LinearSVC(penalty="l1", dual=False, tol=1e-3)),
-#   ('classification', LinearSVC())
-# ])))
+print('=' * 80)
+print("LinearSVC with L1-based feature selection")
+# The smaller C, the stronger the regularization.
+# The more regularization, the more sparsity.
+results.append(benchmark(Pipeline([
+  ('feature_selection', LinearSVC(penalty="l1", dual=False, tol=1e-3)),
+  ('classification', LinearSVC())
+])))
 
 plot(results)

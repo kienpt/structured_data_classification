@@ -95,6 +95,25 @@ def fetch_data_multiclass(indir):
             target_names.add(obj['one_topic'])
     return Bunch(data=data, target=np.array(target), target_names=list(target_names))
 
+def fetch_data_w2v(indir):
+    data = []
+    target = []
+    target_names = set([])
+    if os.path.isdir(indir):
+        for fname in os.listdir(indir):
+            for line in open(indir+'/'+fname):
+                obj = json.loads(line)
+                data.append(obj['w2v'])
+                target.append(obj['one_topic'])
+                target_names.add(obj['one_topic'])
+    else:
+        for line in open(indir):
+            obj= json.loads(line)
+            data.append(obj['w2v'])
+            target.append(obj['one_topic'])
+            target_names.add(obj['one_topic'])
+    return Bunch(data=data, target=np.array(target), target_names=list(target_names))
+
 def fetch_data_multiclass_structured(indir):
     data = []
     target = []
@@ -252,6 +271,11 @@ def prepare_data_oneclass(positive_dir, negative_dir, ratio=0.5):
 
 def prepare_data_multiclass(positive_dir, ratio=0.5):
     data = fetch_data_multiclass(positive_dir)
+    data_train, data_test = split_train_test_multiclass(data)
+    return data_train, data_test
+
+def prepare_data_w2v(positive_dir, ratio=0.5):
+    data = fetch_data_w2v(positive_dir)
     data_train, data_test = split_train_test_multiclass(data)
     return data_train, data_test
 

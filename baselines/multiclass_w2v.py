@@ -43,7 +43,7 @@ from sklearn.neighbors import NearestCentroid
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.utils.extmath import density
 from sklearn import metrics
-from utils import prepare_data_multiclass_structured_combined, plot
+from utils import prepare_data_w2v, plot
 import traceback
 import pickle
 
@@ -89,13 +89,12 @@ print()
 print("Loading data...")
 input_file = sys.argv[1]
 #data_train, data_test = prepare_data('pos', 'neg', 0.8)
-# data_train, data_test = prepare_data_multiclass(input_file)
-data_train, data_test = prepare_data_multiclass_structured_combined(input_file)
+data_train, data_test = prepare_data_w2v(input_file)
 print('Data loaded')
 
 
 def size_mb(docs):
-    return sum(len(s.encode('utf-8')) for s in docs) / 1e6
+    return sum(len(s) for s in docs) / 1e6
 
 data_train_size_mb = size_mb(data_train.data)
 data_test_size_mb = size_mb(data_test.data)
@@ -112,51 +111,54 @@ print()
 # split a training set and a test set
 y_train, y_test = data_train.target, data_test.target
 
-print("Extracting features from the training data using a sparse vectorizer")
-t0 = time()
-if opts.use_hashing:
-    vectorizer = HashingVectorizer(stop_words='english', non_negative=True,
-                                   n_features=opts.n_features)
-    X_train = vectorizer.transform(data_train.data)
-else:
-    vectorizer = TfidfVectorizer(sublinear_tf=True, max_df=0.5,
-                                 stop_words='english')
-    X_train = vectorizer.fit_transform(data_train.data)
-duration = time() - t0
-print("done in %fs at %0.3fMB/s" % (duration, data_train_size_mb / duration))
-print("n_samples: %d, n_features: %d" % X_train.shape)
-print()
+# print("Extracting features from the training data using a sparse vectorizer")
+# t0 = time()
+# if opts.use_hashing:
+#     vectorizer = HashingVectorizer(stop_words='english', non_negative=True,
+#                                    n_features=opts.n_features)
+#     X_train = vectorizer.transform(data_train.data)
+# else:
+#     vectorizer = TfidfVectorizer(sublinear_tf=True, max_df=0.5,
+#                                  stop_words='english')
+#     X_train = vectorizer.fit_transform(data_train.data)
+# duration = time() - t0
+# print("done in %fs at %0.3fMB/s" % (duration, data_train_size_mb / duration))
+# print("n_samples: %d, n_features: %d" % X_train.shape)
+# print()
 
-print("Extracting features from the test data using the same vectorizer")
-t0 = time()
-X_test = vectorizer.transform(data_test.data)
-duration = time() - t0
-print("done in %fs at %0.3fMB/s" % (duration, data_test_size_mb / duration))
-print("n_samples: %d, n_features: %d" % X_test.shape)
-print()
+# print("Extracting features from the test data using the same vectorizer")
+# t0 = time()
+# X_test = vectorizer.transform(data_test.data)
+# duration = time() - t0
+# print("done in %fs at %0.3fMB/s" % (duration, data_test_size_mb / duration))
+# print("n_samples: %d, n_features: %d" % X_test.shape)
+# print()
+
+X_train = data_train.data
+X_test = data_test.data
 
 # mapping from integer feature name to original token string
-if opts.use_hashing:
-    feature_names = None
-else:
-    feature_names = vectorizer.get_feature_names()
+# if opts.use_hashing:
+#     feature_names = None
+# else:
+#     feature_names = vectorizer.get_feature_names()
 
-if opts.select_chi2:
-    print("Extracting %d best features by a chi-squared test" %
-          opts.select_chi2)
-    t0 = time()
-    ch2 = SelectKBest(chi2, k=opts.select_chi2)
-    X_train = ch2.fit_transform(X_train, y_train)
-    X_test = ch2.transform(X_test)
-    if feature_names:
-        # keep selected feature names
-        feature_names = [feature_names[i] for i
-                         in ch2.get_support(indices=True)]
-    print("done in %fs" % (time() - t0))
-    print()
+# if opts.select_chi2:
+#     print("Extracting %d best features by a chi-squared test" %
+#           opts.select_chi2)
+#     t0 = time()
+#     ch2 = SelectKBest(chi2, k=opts.select_chi2)
+#     X_train = ch2.fit_transform(X_train, y_train)
+#     X_test = ch2.transform(X_test)
+#     if feature_names:
+#         # keep selected feature names
+#         feature_names = [feature_names[i] for i
+#                          in ch2.get_support(indices=True)]
+#     print("done in %fs" % (time() - t0))
+#     print()
 
-if feature_names:
-    feature_names = np.asarray(feature_names)
+# if feature_names:
+#     feature_names = np.asarray(feature_names)
 
 
 def trim(s):
