@@ -246,6 +246,9 @@ def read_prop_names(prop_names_file):
     return names
 
 def classify(opts): 
+    '''
+    model and vectorizer must be stored in opts.model_dir directory
+    '''
     prop_names = read_prop_names(opts.prop_names_file)
     models = []
     vects = [] #vectorizers
@@ -330,12 +333,14 @@ def boost(opts):
     X_train = data_train.data
     X_test = data_test.data
     y_train, y_test = data_train.target, data_test.target
+    '''
+    #test
     for a in range(10):
         print(X_train[20000+a][0])
         print(y_train[20000+a])
         print(X_test[20000+a][0])
         print(y_test[20000+a])
-
+    '''
     clf = LinearSVC(loss='l2', penalty='l2', dual=False, tol=1e-3) 
     benchmark(clf, X_train, y_train, X_test, y_test, opts)
 
@@ -422,10 +427,12 @@ def boost_avg(opts):
     X_train = data_train.data
     X_test = data_test.data
     y_train, y_test = data_train.target, data_test.target
+    '''
     print(X_train[30000])
     print(y_train[30000])
     print(X_test[20000])
     print(y_test[20000])
+    '''
     clf = LinearSVC(loss='l2', penalty='l2', dual=False, tol=1e-3) 
     benchmark(clf, X_train, y_train, X_test, y_test, opts)
     
