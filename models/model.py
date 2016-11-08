@@ -320,7 +320,8 @@ def boost(opts):
                                 else:
                                     for scores in obj['scores']:
                                         vec.append(scores[i])
-                        neg.append(vec)
+                            neg.append(vec)
+    print(len(neg))
 
     neg2pos_ratio = 1 #neg examples are twice pos ones
     train2all_ratio= 0.5 #20
@@ -329,6 +330,12 @@ def boost(opts):
     X_train = data_train.data
     X_test = data_test.data
     y_train, y_test = data_train.target, data_test.target
+    for a in range(10):
+        print(X_train[20000+a][0])
+        print(y_train[20000+a])
+        print(X_test[20000+a][0])
+        print(y_test[20000+a])
+
     clf = LinearSVC(loss='l2', penalty='l2', dual=False, tol=1e-3) 
     benchmark(clf, X_train, y_train, X_test, y_test, opts)
 
