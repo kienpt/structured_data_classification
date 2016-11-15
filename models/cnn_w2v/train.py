@@ -15,7 +15,7 @@ import sys
 
 # Model Hyperparameters
 tf.flags.DEFINE_integer("embedding_dim", 4, "Dimensionality of character embedding (default: 128)")
-tf.flags.DEFINE_string("filter_sizes", "14,15,16", "Comma-separated filter sizes (default: '3,4,5')")
+tf.flags.DEFINE_string("filter_sizes", "29,30,31", "Comma-separated filter sizes (default: '3,4,5')")
 tf.flags.DEFINE_integer("num_filters", 512, "Number of filters per filter size (default: 128)")
 tf.flags.DEFINE_float("dropout_keep_prob", 0.5, "Dropout keep probability (default: 0.5)")
 tf.flags.DEFINE_float("l2_reg_lambda", 0.05, "L2 regularizaion lambda (default: 0.0)")
@@ -45,6 +45,15 @@ print("Loading data...")
 w2v = True 
 prop_name = sys.argv[1]
 x_train, y_train, x_dev, y_dev = data_helpers.load_data(w2v, prop_name)
+'''
+#test
+for a in range(10):
+    print x_train[20000+a][0]
+    print y_train[20000+a][0]
+    print x_dev[20000+a][0]
+    print y_dev[20000+a][0]
+
+'''
 print "shape of x_train, y_train, x_dev, y_dev:"
 print x_train.shape
 print y_train.shape
@@ -160,14 +169,6 @@ with tf.Graph().as_default():
             false_positive = diff_counter[-1] #predict = [1], real = [0]
             false_negative = diff_counter[1] #predict = [0], real = [1]
             
-            '''
-            print "true_positive: "  + str(true_positive)
-            print "false_positive: "  + str(false_positive)
-            print "true_negative: "  + str(true_negative)
-            print "false_negative: "  + str(false_negative)
-            print "accuracy: " + str((true_positive + true_negative)/float(true_positive + true_negative + false_positive + false_negative))
-            '''
-
             precision = true_positive/float(true_positive + false_positive)
             recall = true_positive/float(true_positive + false_negative)
             f1_measure = 2*(precision * recall)/(precision + recall)

@@ -85,12 +85,3 @@ class TextCNN(object):
             self.correct_predictions = correct_predictions
             self.accuracy = tf.reduce_mean(tf.cast(correct_predictions, "float"), name="accuracy")
             self.real_y = tf.argmax(self.input_y, 1)
-
-            '''
-            reduced_s = tf.reduce_sum(s)
-            false_negative = reduced_s/2
-            true_positive = tf.size(s) - false_negative
-            reduced_diff = tf.reduce_sum(diff + 1)
-            false_positive = reduced_diff/2
-            true_negative = tf.size(diff) - false_positive
-            '''

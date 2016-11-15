@@ -68,8 +68,8 @@ def split_data_pos_neg(x_pos, x_neg, neg2pos_ratio, train2all_ratio):
 
     x = np.concatenate((x_pos,x_neg), axis=0)
     y = np.concatenate((y_pos,y_neg), axis=0)
-    
-    #shuffle
+
+    #shuffle all data
     random_state = check_random_state(100)
     indices = np.arange(x.shape[0])
     random_state.shuffle(indices)
@@ -87,11 +87,12 @@ def split_data_pos_neg(x_pos, x_neg, neg2pos_ratio, train2all_ratio):
 
 def load_data_and_labels_w2v(name):
     """
+    #TODO: This reader function should be generic. It is hardcoded for recipe for now
     """
     #Loading data
     windown_size = 15
     pad_value = -1
-    infile = "recipe_index_predicted.json"
+    infile = "../../data_collection/commoncrawl/recipe_data/recipe_index_predicted.json"
     pos = []
     neg = []
     #name = "ingredients"
@@ -117,7 +118,7 @@ def load_data_and_labels_w2v(name):
                                         vec.append(scores[i])
                             pos.append(vec)
 
-                if name in obj['negative']: #all objects should have negative, why some don't???
+                if name in obj['negative']: #TODO: all objects should have negative, why some don't???
                     neg_indices = obj['negative'][name]
                     for idx in neg_indices:
                         text = obj['text'][idx]

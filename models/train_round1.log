@@ -1,0 +1,283 @@
+None
+Usage: model.py [options]
+
+Options:
+  -h, --help            show this help message and exit
+  --action=ACTION       train,predict
+  --report              Print a detailed classification report.
+  --index_file=INDEX_FILE
+                        file that contains segmented sentences and their
+                        labels
+  --prop_name=PROP_NAME
+                        property name
+  --pos_file=POSITIVE_FILE
+                        file with positive examples
+  --neg_file=NEGATIVE_FILE
+                        file with negative examples
+  --confusion_matrix    Print the confusion matrix.
+  --model_file=MODEL_FILE
+                        file to save the model
+  --vect_file=VECT_FILE
+                        file to save the vectorizer
+  --prop_names_file=PROP_NAMES_FILE
+                        file contains property names
+  --model_dir=MODEL_DIR
+                        directory contains both model and vectorizer files
+  --classify_outfile=CLASSIFY_OUTFILE
+                        output file that contains classification scores of all
+                        sentences
+  --windown_size=WINDOWN_SIZE
+                        size of the windown surrounding predicting sentence
+  --chi2_select=SELECT_CHI2
+                        Select some number of features using a chi-squared
+                        test
+  --top10               Print ten most discriminative terms per class for
+                        every classifier.
+  --use_hashing         Use a hashing vectorizer.
+  --n_features=N_FEATURES
+                        n_features when using the hashing vectorizer.
+
+Loading data...
+Shuffle negative examples
+Size of positive examples: 1173
+Size of negative examples: 1173
+2346
+Total number of data points: 2346
+Number of data points in training data: 1173
+Number of data points in test data: 1173
+1173 documents - 0.050MB (training set)
+1173 documents - 0.057MB (test set)
+2 categories
+
+n_samples: 1173, n_features: 1799
+Extracting features from the test data using the same vectorizer
+n_samples: 1173, n_features: 1799 
+
+________________________________________________________________________________
+Training: 
+LinearSVC(C=1.0, class_weight=None, dual=False, fit_intercept=True,
+     intercept_scaling=1, loss='squared_hinge', max_iter=1000,
+     multi_class='ovr', penalty='l2', random_state=None, tol=0.001,
+     verbose=0)
+train time: 0.003s
+test time:  0.000s
+recall:   0.924
+precision:   0.783
+f1 score:   0.848
+dimensionality: 1799
+density: 1.000000
+
+confusion matrix:
+[[465 144]
+ [ 43 521]]
+
+None
+Usage: model.py [options]
+
+Options:
+  -h, --help            show this help message and exit
+  --action=ACTION       train,predict
+  --report              Print a detailed classification report.
+  --index_file=INDEX_FILE
+                        file that contains segmented sentences and their
+                        labels
+  --prop_name=PROP_NAME
+                        property name
+  --pos_file=POSITIVE_FILE
+                        file with positive examples
+  --neg_file=NEGATIVE_FILE
+                        file with negative examples
+  --confusion_matrix    Print the confusion matrix.
+  --model_file=MODEL_FILE
+                        file to save the model
+  --vect_file=VECT_FILE
+                        file to save the vectorizer
+  --prop_names_file=PROP_NAMES_FILE
+                        file contains property names
+  --model_dir=MODEL_DIR
+                        directory contains both model and vectorizer files
+  --classify_outfile=CLASSIFY_OUTFILE
+                        output file that contains classification scores of all
+                        sentences
+  --windown_size=WINDOWN_SIZE
+                        size of the windown surrounding predicting sentence
+  --chi2_select=SELECT_CHI2
+                        Select some number of features using a chi-squared
+                        test
+  --top10               Print ten most discriminative terms per class for
+                        every classifier.
+  --use_hashing         Use a hashing vectorizer.
+  --n_features=N_FEATURES
+                        n_features when using the hashing vectorizer.
+
+Loading data...
+Shuffle negative examples
+Size of positive examples: 7042
+Size of negative examples: 7042
+14084
+Total number of data points: 14084
+Number of data points in training data: 7042
+Number of data points in test data: 7042
+7042 documents - 0.851MB (training set)
+7042 documents - 0.869MB (test set)
+2 categories
+
+n_samples: 7042, n_features: 9597
+Extracting features from the test data using the same vectorizer
+n_samples: 7042, n_features: 9597 
+
+________________________________________________________________________________
+Training: 
+LinearSVC(C=1.0, class_weight=None, dual=False, fit_intercept=True,
+     intercept_scaling=1, loss='squared_hinge', max_iter=1000,
+     multi_class='ovr', penalty='l2', random_state=None, tol=0.001,
+     verbose=0)
+train time: 0.044s
+test time:  0.001s
+recall:   0.866
+precision:   0.832
+f1 score:   0.849
+dimensionality: 9597
+density: 1.000000
+
+
+None
+Usage: model.py [options]
+
+Options:
+  -h, --help            show this help message and exit
+  --action=ACTION       train,predict
+  --report              Print a detailed classification report.
+  --index_file=INDEX_FILE
+                        file that contains segmented sentences and their
+                        labels
+  --prop_name=PROP_NAME
+                        property name
+  --pos_file=POSITIVE_FILE
+                        file with positive examples
+  --neg_file=NEGATIVE_FILE
+                        file with negative examples
+  --confusion_matrix    Print the confusion matrix.
+  --model_file=MODEL_FILE
+                        file to save the model
+  --vect_file=VECT_FILE
+                        file to save the vectorizer
+  --prop_names_file=PROP_NAMES_FILE
+                        file contains property names
+  --model_dir=MODEL_DIR
+                        directory contains both model and vectorizer files
+  --classify_outfile=CLASSIFY_OUTFILE
+                        output file that contains classification scores of all
+                        sentences
+  --windown_size=WINDOWN_SIZE
+                        size of the windown surrounding predicting sentence
+  --chi2_select=SELECT_CHI2
+                        Select some number of features using a chi-squared
+                        test
+  --top10               Print ten most discriminative terms per class for
+                        every classifier.
+  --use_hashing         Use a hashing vectorizer.
+  --n_features=N_FEATURES
+                        n_features when using the hashing vectorizer.
+
+Loading data...
+Shuffle negative examples
+Size of positive examples: 73596
+Size of negative examples: 73596
+147192
+Total number of data points: 147192
+Number of data points in training data: 73596
+Number of data points in test data: 73596
+73596 documents - 5.250MB (training set)
+73596 documents - 5.221MB (test set)
+2 categories
+
+n_samples: 73596, n_features: 25115
+Extracting features from the test data using the same vectorizer
+n_samples: 73596, n_features: 25115 
+
+________________________________________________________________________________
+Training: 
+LinearSVC(C=1.0, class_weight=None, dual=False, fit_intercept=True,
+     intercept_scaling=1, loss='squared_hinge', max_iter=1000,
+     multi_class='ovr', penalty='l2', random_state=None, tol=0.001,
+     verbose=0)
+train time: 0.566s
+test time:  0.003s
+recall:   0.952
+precision:   0.936
+f1 score:   0.944
+dimensionality: 25115
+density: 1.000000
+
+
+None
+Usage: model.py [options]
+
+Options:
+  -h, --help            show this help message and exit
+  --action=ACTION       train,predict
+  --report              Print a detailed classification report.
+  --index_file=INDEX_FILE
+                        file that contains segmented sentences and their
+                        labels
+  --prop_name=PROP_NAME
+                        property name
+  --pos_file=POSITIVE_FILE
+                        file with positive examples
+  --neg_file=NEGATIVE_FILE
+                        file with negative examples
+  --confusion_matrix    Print the confusion matrix.
+  --model_file=MODEL_FILE
+                        file to save the model
+  --vect_file=VECT_FILE
+                        file to save the vectorizer
+  --prop_names_file=PROP_NAMES_FILE
+                        file contains property names
+  --model_dir=MODEL_DIR
+                        directory contains both model and vectorizer files
+  --classify_outfile=CLASSIFY_OUTFILE
+                        output file that contains classification scores of all
+                        sentences
+  --windown_size=WINDOWN_SIZE
+                        size of the windown surrounding predicting sentence
+  --chi2_select=SELECT_CHI2
+                        Select some number of features using a chi-squared
+                        test
+  --top10               Print ten most discriminative terms per class for
+                        every classifier.
+  --use_hashing         Use a hashing vectorizer.
+  --n_features=N_FEATURES
+                        n_features when using the hashing vectorizer.
+
+Loading data...
+Shuffle negative examples
+Size of positive examples: 60372
+Size of negative examples: 60372
+120744
+Total number of data points: 120744
+Number of data points in training data: 60372
+Number of data points in test data: 60372
+60372 documents - 7.014MB (training set)
+60372 documents - 6.987MB (test set)
+2 categories
+
+n_samples: 60372, n_features: 23288
+Extracting features from the test data using the same vectorizer
+n_samples: 60372, n_features: 23288 
+
+________________________________________________________________________________
+Training: 
+LinearSVC(C=1.0, class_weight=None, dual=False, fit_intercept=True,
+     intercept_scaling=1, loss='squared_hinge', max_iter=1000,
+     multi_class='ovr', penalty='l2', random_state=None, tol=0.001,
+     verbose=0)
+train time: 1.143s
+test time:  0.014s
+recall:   0.943
+precision:   0.943
+f1 score:   0.943
+dimensionality: 23288
+density: 1.000000
+
+

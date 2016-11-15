@@ -166,8 +166,9 @@ def fetch_data_byfile(infile, label=1, max = -1):
 
 
 def split_train_test(positive_data, negative_data, ratio=0.5):
-    # return train and test data
-
+    '''
+    return train and test data
+    '''
     #merge
     data = positive_data.data + negative_data.data
     target = np.concatenate((positive_data.target, negative_data.target))
@@ -193,6 +194,56 @@ def split_train_test(positive_data, negative_data, ratio=0.5):
     print "Total number of data points: " + str(len(all_data.data))
     print "Number of data points in training data: " + str(len(data_train.data))
     print "Number of data points in test data: " + str(len(data_test.data))
+    return data_train, data_test
+
+def prepare_data(prop_name, core_prop_names, index_file, neg2pos_ratio, train2all_ratio):
+    pos = []
+    neg = []
+    set_pos = set([])
+    set_neg = set([])
+    with open(index_file) as lines:
+        for line in lines:
+            obj = json.loads(line)
+            is_good_obj = False #False if the object does not contain any of the core properties
+            for name in core_prop_names:
+                if name in obj['microdata']:
+                    is_good_obj = True
+            if is_good_obj:
+                if prop_name in obj['microdata']:
+                    pos_indices = obj['microdata'][prop_name]
+                    for idx in pos_indices:
+                        text = obj['text'][idx]
+                        if text not in set_pos:
+                            set_pos.add(text)
+                            pos.append(preprocess_text(text))
+                if prop_name in obj['negative']: #TODO: all objects should have negative, why some don't???
+                    neg_indices = obj['negative'][prop_name]
+                    for idx in neg_indices:
+                        text = obj['text'][idx]
+                        if text not in set_neg:
+                            set_neg.add(text)
+                            neg.append(preprocess_text(text))
+
+    print "Shuffle negative examples"
+    random_state = check_random_state(100)
+    indices = np.arange(len(neg))
+    random_state.shuffle(indices)
+    # Use an object array to shuffle: avoids memory copy
+    neg_lst = np.array(neg, dtype=object)
+    neg_lst = neg_lst[indices] #shuffle
+    neg = neg_lst.tolist()
+    pos_size = len(pos)
+    neg_size = neg2pos_ratio*pos_size
+    neg = neg[:neg_size]
+    neg_y = [0]*neg_size
+    neg_data =  Bunch(data=neg, target=np.array(neg_y))
+
+    pos_y = [1]*pos_size
+    pos_data = Bunch(data=pos, target=np.array(pos_y))
+
+    print "Size of positive examples: " + str(pos_size)
+    print "Size of negative examples: " + str(neg_size)
+    data_train, data_test = split_train_test(pos_data, neg_data, train2all_ratio)
     return data_train, data_test
 
 def prepare_data_bydir(positive_dir, negative_dir, neg_2_pos_ratio = 1, train_2_all_ratio=0.5):

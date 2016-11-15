@@ -95,6 +95,12 @@ def get_parameters():
     op.add_option("--report",
                   action="store_true", dest="print_report",
                   help="Print a detailed classification report.")
+    op.add_option("--index_file",
+                  action="store", type="string", dest="index_file",
+                  help="file that contains segmented sentences and their labels")
+    op.add_option("--prop_name",
+                  action="store", type="string", dest="prop_name",
+                  help="property name")
     op.add_option("--pos_file",
                   action="store", type="string", dest="positive_file",
                   help="file with positive examples")
@@ -111,9 +117,6 @@ def get_parameters():
                   action="store", type="string", dest="vect_file",
                   help="file to save the vectorizer")
     #Classify
-    op.add_option("--index_file",
-                  action="store", type="string", dest="index_file",
-                  help="file with all sentences and indices of positive and negative sentences for each property")
     op.add_option("--prop_names_file",
                   action="store", type="string", dest="prop_names_file",
                   help="file contains property names")
@@ -128,10 +131,6 @@ def get_parameters():
     op.add_option("--windown_size",
                   action="store", type="int", dest="windown_size",
                   help="size of the windown surrounding predicting sentence")
-
-    op.add_option("--prop_name",
-                  action="store", type="string", dest="prop_name",
-                  help="name of the property to be considering")
 
     #others
     op.add_option("--chi2_select",
@@ -162,7 +161,8 @@ def train(opts):
     print("Loading data...")
     neg2pos_ratio = 1 #neg examples are twice pos ones
     train2all_ratio= 0.5 #20
-    data_train, data_test = utils.prepare_data_byfile(opts.positive_file, opts.negative_file, neg2pos_ratio, train2all_ratio)
+    core_prop_names = ["recipeInstructions", "ingredients"]
+    data_train, data_test = utils.prepare_data(opts.prop_name, core_prop_names, opts.index_file, neg2pos_ratio, train2all_ratio)
     
     categories = ['negative', 'positive']
      
@@ -227,7 +227,7 @@ def train(opts):
     if feature_names:
         feature_names = np.asarray(feature_names)
 
-    clf = LinearSVC(loss='l2', penalty='l2', dual=False, tol=1e-3) 
+    clf = LinearSVC(loss='squared_hinge', penalty='l2', dual=False, tol=1e-3) 
     benchmark(clf, X_train, y_train, X_test, y_test, opts)
 
     #Saving the model and vectorizer 
@@ -341,7 +341,7 @@ def boost(opts):
         print(X_test[20000+a][0])
         print(y_test[20000+a])
     '''
-    clf = LinearSVC(loss='l2', penalty='l2', dual=False, tol=1e-3) 
+    clf = LinearSVC(loss='squared_hinge', penalty='l2', dual=False, tol=1e-3) 
     benchmark(clf, X_train, y_train, X_test, y_test, opts)
 
 def boost_avg(opts):
@@ -433,7 +433,7 @@ def boost_avg(opts):
     print(X_test[20000])
     print(y_test[20000])
     '''
-    clf = LinearSVC(loss='l2', penalty='l2', dual=False, tol=1e-3) 
+    clf = LinearSVC(loss='squared_hinge', penalty='l2', dual=False, tol=1e-3) 
     benchmark(clf, X_train, y_train, X_test, y_test, opts)
     
     if opts.model_file:
